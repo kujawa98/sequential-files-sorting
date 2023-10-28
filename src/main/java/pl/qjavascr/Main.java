@@ -10,6 +10,8 @@ public class Main {
     public static void main(String[] args) throws IOException {
         Tape tape = new Tape("src/main/resources/resource");
         var records = Arrays.stream(tape.readSingleBlock()).map(Record::new).toList();
+        records = Arrays.stream(tape.readSingleBlock()).map(Record::new).toList();
+        tape.close();
         var lis = records.stream().sorted(Record::compareTo).toList();
         System.out.println();
     }
