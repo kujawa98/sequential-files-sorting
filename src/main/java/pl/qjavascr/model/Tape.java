@@ -10,26 +10,38 @@ public class Tape {
     private static final int RECORD_LEN = 10;
     private final DataInputStream tape;
     private final String fileName;
+    private final byte[] buffer;
+    private int bufferReadIndex = 0;
 
     public Tape(String fileName) throws FileNotFoundException {
         this.fileName = fileName;
         this.tape = new DataInputStream(new FileInputStream(fileName));
+        this.buffer = new byte[BLOCK_SIZE];
     }
 
-    public String readSingleRecord() throws IOException {
-        byte[] bytes = new byte[RECORD_LEN + 2];
-        if (tape.read(bytes) != -1) {
-            return new String(bytes).trim();
+    public Record readSingleRecord() throws IOException {
+        byte[] bytes = new byte[RECORD_LEN];
+        for (int i = 0; i < RECORD_LEN; i++) {
+            bytes[i] = buffer[bufferReadIndex++];
+            if (bufferReadIndex == BLOCK_SIZE) {
+                try {
+                    readSingleBlock();
+                } catch (RuntimeException ex) {
+                    return new Record(new String(bytes).trim());
+                } finally {
+                    bufferReadIndex = 0;
+                }
+            }
         }
-        return "";
+        return new Record(new String(bytes).trim());
     }
 
-    public String[] readSingleBlock() throws IOException {
-        byte[] bytes = new byte[BLOCK_SIZE + 2 * (BLOCK_SIZE / RECORD_LEN)];
-        if (tape.read(bytes) != -1) {
-            return new String(bytes).trim().split("\r\n");
+    public int readSingleBlock() throws IOException {
+        int result = tape.read(buffer);
+        if (result == -1) {
+            throw new RuntimeException("End of file");
         }
-        return new String[]{};
+        return result;
     }
 
     public void close() throws IOException {
