@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 public class Tape {
-    private static final int BLOCK_SIZE = 20;
+    private static final int BLOCK_SIZE = 25;
     private static final int RECORD_LEN = 10;
     private final String fileName;
 
@@ -25,7 +25,7 @@ public class Tape {
 
     public String[] readSingleBlock() throws IOException {
         DataInputStream tape = new DataInputStream(new FileInputStream(fileName));
-        byte[] bytes = new byte[BLOCK_SIZE + 2];
+        byte[] bytes = new byte[BLOCK_SIZE + 4];
         tape.read(bytes);
         tape.close();
         String[] s = new String(bytes).trim().split("\r\n");
