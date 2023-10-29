@@ -40,12 +40,13 @@ public class WritingTape {
 
                 }
                 writeBuffer();
+                bufferWriteIndex = 0;
                 return;
             }
         }
     }
 
-    public void writeBuffer() {
+    private void writeBuffer() {
         try {
             tape.write(buffer, 0, bufferWriteIndex);
         } catch (IOException e) {
@@ -55,6 +56,7 @@ public class WritingTape {
 
     public void close() {
         try {
+            writeBuffer();
             tape.close();
         } catch (IOException e) {
             throw new RuntimeException(e);

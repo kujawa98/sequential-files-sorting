@@ -11,13 +11,14 @@ public class ReadingTape {
     private int bufferReadIndex = 0;
     private int blockDelimiter = BLOCK_SIZE;
 
-    public ReadingTape(String fileName) throws FileNotFoundException {
+    public ReadingTape(String fileName) throws IOException {
         this.fileName = fileName;
         this.tape = new DataInputStream(new FileInputStream(fileName));
         this.buffer = new byte[BLOCK_SIZE];
+        this.tape.read(this.buffer);
     }
 
-    public Record readSingleRecord() throws IOException {
+    public Record readRecord() throws IOException {
         if (bufferReadIndex == blockDelimiter) {
             throw new RuntimeException("Last record");
         }
@@ -29,7 +30,7 @@ public class ReadingTape {
                     break;
                 }
                 try {
-                    blockDelimiter = readSingleBlock();
+                    blockDelimiter = readBuffer();
                 } finally {
                     bufferReadIndex = 0;
                 }
@@ -38,7 +39,7 @@ public class ReadingTape {
         return new Record(new String(bytes).trim());
     }
 
-    public int readSingleBlock() throws IOException {
+    private int readBuffer() throws IOException {
         int result = tape.read(buffer);
         if (result == -1) {
             throw new RuntimeException("End of file");

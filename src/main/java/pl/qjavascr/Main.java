@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-//        ReadingTape readingTape = new ReadingTape("src/main/resources/resource");
+//        ReadingTape readingTape = new ReadingTape("src/main/resources/resource.txt");
 //        readingTape.readSingleBlock();
 //        for (int i = 0; i < 14; i++) {
 //            var bl = readingTape.readSingleRecord();
@@ -17,7 +17,7 @@ public class Main {
 //        System.out.println();
 
 
-//        ReadingTape readingTape = new ReadingTape("src/main/resources/resource");
+//        ReadingTape readingTape = new ReadingTape("src/main/resources/resource.txt");
 //        readingTape.readSingleBlock();
 //        Sorter sorter = new Sorter();
 //        ReadingTape readingTape1 = new ReadingTape("src/main/resources/readingTape1");

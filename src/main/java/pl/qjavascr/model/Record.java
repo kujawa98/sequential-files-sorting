@@ -25,10 +25,10 @@ public class Record implements Comparable<Record> {
             for (var secondCharacter : datRec) {
                 var second = secondCharacter.toCharArray();
                 if (first[0] <= second[0]) {
-                    returnCode = 1;
+                    returnCode = -1;
                     break;
                 } else {
-                    returnCode = -1;
+                    returnCode = 1;
                 }
             }
         }
