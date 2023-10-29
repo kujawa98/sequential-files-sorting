@@ -35,8 +35,8 @@ public class Record implements Comparable<Record> {
         return returnCode;
     }
 
-    public void print() {
-        System.out.println(data);
+    public String data() {
+        return data;
     }
 
 }
