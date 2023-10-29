@@ -1,17 +1,18 @@
 package pl.qjavascr.sorter;
 
-import pl.qjavascr.model.Record;
-import pl.qjavascr.model.Tape;
+import pl.qjavascr.model.ReadingTape;
+import pl.qjavascr.model.WritingTape;
+
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class Sorter {
-    public void sort(Tape tape, String outputFileName) throws FileNotFoundException {
+    public void sort(ReadingTape readingTape, String outputFileName) throws FileNotFoundException {
         //todo distribute
-        Tape tape1 = new Tape("src/main/resources/tape1");
-        Tape tape2 = new Tape("src/main/resources/tape2");
-        Tape outputTape = new Tape("src/main/resources/" + outputFileName);
+        ReadingTape readingTape1 = new ReadingTape("src/main/resources/readingTape1");
+        ReadingTape readingTape2 = new ReadingTape("src/main/resources/readingTape2");
+        ReadingTape outputReadingTape = new ReadingTape("src/main/resources/" + outputFileName);
 
         //todo merge
         //todo loop
@@ -19,29 +20,29 @@ public class Sorter {
 
     }
 
-    public void distribute(Tape tape, Tape tape1, Tape tape2) throws IOException {
-        //todo zapisuj, dopóki rosną
-        Tape toSave = tape1;
-        Record record = tape.readSingleRecord();
-        toSave.save(record);
-
-        while (true) {
-            Record newRecord;
-            try {
-                newRecord = tape.readSingleRecord();
-            } catch (RuntimeException ex) {
-                break;
-            }
-            if (newRecord.compareTo(record) < 0) {
-                if (toSave == tape1) {
-                    toSave = tape2;
-                } else {
-                    toSave = tape1;
-                }
-            }
-            toSave.save(newRecord);
-            record = newRecord;
-        }
+    public void distribute(ReadingTape readingTape, WritingTape readingTape1, WritingTape readingTape2) throws IOException {
+//        //todo zapisuj, dopóki rosną
+//        WritingTape toSave = readingTape1;
+//        Record record = readingTape.readSingleRecord();
+//        toSave.save(record);
+//
+//        while (true) {
+//            Record newRecord;
+//            try {
+//                newRecord = readingTape.readSingleRecord();
+//            } catch (RuntimeException ex) {
+//                break;
+//            }
+//            if (newRecord.compareTo(record) < 0) {
+//                if (toSave == readingTape1) {
+//                    toSave = readingTape2;
+//                } else {
+//                    toSave = readingTape1;
+//                }
+//            }
+//            toSave.save(newRecord);
+//            record = newRecord;
+//        }
 
     }
 

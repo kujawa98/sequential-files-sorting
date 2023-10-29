@@ -2,20 +2,18 @@ package pl.qjavascr.model;
 
 import java.io.*;
 
-public class Tape {
+public class ReadingTape {
     private static final int BLOCK_SIZE = 23;
     private static final int RECORD_LEN = 10;
     private final DataInputStream tape;
-//    private final DataOutputStream dataOutputStream;
     private final String fileName;
     private final byte[] buffer;
     private int bufferReadIndex = 0;
     private int blockDelimiter = BLOCK_SIZE;
 
-    public Tape(String fileName) throws FileNotFoundException {
+    public ReadingTape(String fileName) throws FileNotFoundException {
         this.fileName = fileName;
         this.tape = new DataInputStream(new FileInputStream(fileName));
-//        this.dataOutputStream = new DataOutputStream(new FileOutputStream(fileName));
         this.buffer = new byte[BLOCK_SIZE];
     }
 
@@ -46,10 +44,6 @@ public class Tape {
             throw new RuntimeException("End of file");
         }
         return result;
-    }
-
-    public void save(Record record) throws IOException {
-//        dataOutputStream.writeBytes(record.data());
     }
 
 

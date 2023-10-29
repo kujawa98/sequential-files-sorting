@@ -1,27 +1,27 @@
 package pl.qjavascr;
 
-import pl.qjavascr.model.Tape;
+import pl.qjavascr.model.ReadingTape;
 import pl.qjavascr.sorter.Sorter;
 
 import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-//        Tape tape = new Tape("src/main/resources/resource");
-//        tape.readSingleBlock();
+//        ReadingTape readingTape = new ReadingTape("src/main/resources/resource");
+//        readingTape.readSingleBlock();
 //        for (int i = 0; i < 14; i++) {
-//            var bl = tape.readSingleRecord();
+//            var bl = readingTape.readSingleRecord();
 //            bl.print();
 //        }
-//        tape.close();
+//        readingTape.close();
 //        System.out.println();
 
 
-        Tape tape = new Tape("src/main/resources/resource");
-        tape.readSingleBlock();
-        Sorter sorter = new Sorter();
-        Tape tape1 = new Tape("src/main/resources/tape1");
-        Tape tape2 = new Tape("src/main/resources/tape2");
-        sorter.distribute(tape, tape1, tape2);
+//        ReadingTape readingTape = new ReadingTape("src/main/resources/resource");
+//        readingTape.readSingleBlock();
+//        Sorter sorter = new Sorter();
+//        ReadingTape readingTape1 = new ReadingTape("src/main/resources/readingTape1");
+//        ReadingTape readingTape2 = new ReadingTape("src/main/resources/readingTape2");
+//        sorter.distribute(readingTape, readingTape1, readingTape2);
     }
 }
