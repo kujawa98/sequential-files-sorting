@@ -1,6 +1,5 @@
 package pl.qjavascr.sorter;
 
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import pl.qjavascr.model.ReadingTape;
 import pl.qjavascr.model.WritingTape;
