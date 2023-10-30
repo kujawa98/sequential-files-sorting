@@ -7,18 +7,18 @@ import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-//        ReadingTape readingTape = new ReadingTape("src/main/resources/resource.txt");
-//        readingTape.readSingleBlock();
-//        for (int i = 0; i < 14; i++) {
-//            var bl = readingTape.readSingleRecord();
-//            bl.print();
-//        }
-//        readingTape.close();
-//        System.out.println();
+        ReadingTape readingTape = new ReadingTape("src/main/resources/resource.txt");
+        for (int i = 0; i < 5; i++) {
+            var bl = readingTape.readRecord();
+            System.out.println(bl.data());
+        }
+        var bl = readingTape.readRecord();
+        readingTape.close();
+        System.out.println();
 
 
 //        ReadingTape readingTape = new ReadingTape("src/main/resources/resource.txt");
-//        readingTape.readSingleBlock();
+//        readingTape.readRecord();
 //        Sorter sorter = new Sorter();
 //        ReadingTape readingTape1 = new ReadingTape("src/main/resources/readingTape1");
 //        ReadingTape readingTape2 = new ReadingTape("src/main/resources/readingTape2");

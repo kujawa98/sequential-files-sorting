@@ -24,7 +24,9 @@ public class Record implements Comparable<Record> {
             var first = character.toCharArray();
             for (var secondCharacter : datRec) {
                 var second = secondCharacter.toCharArray();
-                if (first[0] <= second[0]) {
+                if (first[0] == second[0]) {
+                    returnCode = 0;
+                } else if (first[0] < second[0]) {
                     returnCode = -1;
                     break;
                 } else {

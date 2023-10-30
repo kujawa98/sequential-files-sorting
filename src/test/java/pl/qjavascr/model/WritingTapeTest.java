@@ -15,13 +15,12 @@ public class WritingTapeTest {
 
     @Test
     void testWrite() throws IOException {
-        var rec = new Record("aaaaaaaaa");
+        var rec = new Record("aaaaaaaaaz");
 
         writingTape.writeRecord(rec);
         writingTape.writeRecord(rec);
         writingTape.writeRecord(rec);
 
-//        writingTape.writeBuffer();
 
         writingTape.close();
     }

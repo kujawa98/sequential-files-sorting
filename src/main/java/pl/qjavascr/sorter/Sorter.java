@@ -48,8 +48,62 @@ public class Sorter {
         readingTape.close();
     }
 
-    public void merge(ReadingTape readingTape1, ReadingTape readingTape2, WritingTape writingTape) {
+    public void merge(ReadingTape readingTape1, ReadingTape readingTape2, WritingTape writingTape) throws IOException {
+        Record record1 = readingTape1.readRecord();
+        Record record2 = readingTape2.readRecord();
+        Record newRecord1;
+        Record newRecord2;
 
+        while (true) {
+            if (record1.data().isEmpty()) {
+                do {
+                    writingTape.writeRecord(record2);
+                    record2 = readingTape2.readRecord();
+                } while (!record2.data().isEmpty());
+                break;
+            } else if (record2.data().isEmpty()) {
+                do {
+                    writingTape.writeRecord(record1);
+                    record1 = readingTape1.readRecord();
+                } while (!record1.data().isEmpty());
+                break;
+            } else if (record1.compareTo(record2) <= 0) {
+                writingTape.writeRecord(record1);
+                newRecord1 = readingTape1.readRecord();
+                if (newRecord1.data().isEmpty() || newRecord1.compareTo(record1) > 0) { //koniec serii
+                    while (true) {
+                        writingTape.writeRecord(record2);
+                        newRecord2 = readingTape2.readRecord();
+                        if (newRecord2.data().isEmpty() || newRecord2.compareTo(record2) > 0) {
+                            record2 = newRecord2;
+                            break;
+                        } else {
+                            record2 = newRecord2;
+                        }
+                    }
+                }
+                record1 = newRecord1;
+            } else {
+                writingTape.writeRecord(record2);
+                newRecord2 = readingTape2.readRecord();
+                if (newRecord2.data().isEmpty() || newRecord2.compareTo(record2) > 0) { //koniec serii
+                    while (true) {
+                        writingTape.writeRecord(record1);
+                        newRecord1 = readingTape1.readRecord();
+                        if (newRecord1.data().isEmpty() || newRecord1.compareTo(record1) > 0) {
+                            record1 = newRecord1;
+                            break;
+                        } else {
+                            record1 = newRecord1;
+                        }
+                    }
+                }
+                record2 = newRecord2;
+            }
+        }
+        readingTape1.close();
+        readingTape2.close();
+        writingTape.close();
     }
 
 }
