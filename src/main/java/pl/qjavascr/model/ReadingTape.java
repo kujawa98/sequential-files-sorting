@@ -22,7 +22,7 @@ public class ReadingTape {
 
     public Record readRecord() throws IOException {
         if (bufferReadIndex == blockDelimiter) {
-            throw new RuntimeException("Last record");
+            return new Record("");
         }
         byte[] bytes = new byte[RECORD_LEN];
         for (int i = 0; i < RECORD_LEN; i++) {
