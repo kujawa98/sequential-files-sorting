@@ -9,16 +9,40 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class Sorter {
-    public void sort(ReadingTape readingTape, String outputFileName) throws FileNotFoundException {
-        //todo distribute
-//        ReadingTape readingTape1 = new ReadingTape("src/main/resources/readingTape1");
-//        ReadingTape readingTape2 = new ReadingTape("src/main/resources/readingTape2");
-//        ReadingTape outputReadingTape = new ReadingTape("src/main/resources/" + outputFileName);
+    private static final String TEMP_TAPE_1 = "src/main/resources/tape1.txt";
+    private static final String TEMP_TAPE_2 = "src/main/resources/tape2.txt";
+    private static final String SOURCE = "src/main/resources/resource.txt";
+    private static final String OUTPUT = "src/main/resources/output.txt";
 
-        //todo merge
-        //todo loop
-        //todo save
+    public void sort(ReadingTape readingTape, String outputFileName) throws IOException {
+        WritingTape writingTape = new WritingTape(OUTPUT);
 
+        Record record;
+        do {
+            record = readingTape.readRecord();
+            writingTape.writeRecord(record);
+        } while (!record.data().isEmpty());
+        writingTape.close();
+        readingTape.close();
+
+        do {
+            //todo distribute
+            ReadingTape rdt = new ReadingTape(OUTPUT);
+            WritingTape writingTape1 = new WritingTape(TEMP_TAPE_1);
+            WritingTape writingTape2 = new WritingTape(TEMP_TAPE_2);
+            distribute(rdt, writingTape1, writingTape2);
+
+            //todo merge
+            ReadingTape readingTape1 = new ReadingTape(TEMP_TAPE_1);
+            ReadingTape readingTape2 = new ReadingTape(TEMP_TAPE_2);
+            WritingTape outputTape = new WritingTape(OUTPUT);
+            merge(readingTape1, readingTape2, outputTape);
+        } while (!checkIfOutputSorted());
+
+    }
+
+    private boolean checkIfOutputSorted() {
+        return true;
     }
 
     public void distribute(ReadingTape readingTape, WritingTape writingTape1, WritingTape writingTape2) throws IOException {
@@ -28,11 +52,13 @@ public class Sorter {
 
         while (true) {
             Record newRecord;
-            try {
-                newRecord = readingTape.readRecord();
-            } catch (RuntimeException ex) {
+
+            newRecord = readingTape.readRecord();
+
+            if (newRecord.data().isEmpty()) {
                 break;
             }
+
             if (newRecord.compareTo(record) < 0) {
                 if (toSave == writingTape1) {
                     toSave = writingTape2;
@@ -86,11 +112,11 @@ public class Sorter {
             } else {
                 writingTape.writeRecord(record2);
                 newRecord2 = readingTape2.readRecord();
-                if (newRecord2.data().isEmpty() || newRecord2.compareTo(record2) > 0) { //koniec serii
+                if (newRecord2.data().isEmpty() || newRecord2.compareTo(record2) < 0) { //koniec serii
                     while (true) {
                         writingTape.writeRecord(record1);
                         newRecord1 = readingTape1.readRecord();
-                        if (newRecord1.data().isEmpty() || newRecord1.compareTo(record1) > 0) {
+                        if (newRecord1.data().isEmpty() || newRecord1.compareTo(record1) < 0) {
                             record1 = newRecord1;
                             break;
                         } else {

@@ -20,6 +20,19 @@ public class Record implements Comparable<Record> {
         var datRec = CollectionUtils.subtract(recDataCopy, dataCopy);
 
         int returnCode = 0;
+
+
+        if (datRec.contains("") && dat.contains("")) {
+            return 0;
+        }
+        if (dat.contains("")) {
+            return 1;
+        }
+        if (datRec.contains("")) {
+            return -1;
+        }
+
+
         for (var character : dat) {
             var first = character.toCharArray();
             for (var secondCharacter : datRec) {

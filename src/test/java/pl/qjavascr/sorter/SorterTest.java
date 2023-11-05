@@ -29,4 +29,11 @@ public class SorterTest {
 
         sorter.merge(readingTape1, readingTape2, writingTape); //chcę aaaaaaaaacaaaaaaaaazaaaaaaaaawaaaaaaaaax
     }
+
+    @Test
+    void testSort() throws IOException {
+        ReadingTape readingTape = new ReadingTape("src/main/resources/resource.txt");
+        String outputFileName = "src/main/resources/output.txt";
+        sorter.sort(readingTape,outputFileName);
+    }
 }
