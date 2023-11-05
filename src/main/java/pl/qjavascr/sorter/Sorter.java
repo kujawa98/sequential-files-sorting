@@ -11,12 +11,12 @@ import java.io.IOException;
 public class Sorter {
     private static final String TEMP_TAPE_1 = "src/main/resources/tape1.txt";
     private static final String TEMP_TAPE_2 = "src/main/resources/tape2.txt";
-    private static final String SOURCE = "src/main/resources/resource.txt";
     private static final String OUTPUT = "src/main/resources/output.txt";
 
-    public void sort(ReadingTape readingTape, String outputFileName) throws IOException {
+    public void sort(ReadingTape readingTape) throws IOException {
         WritingTape writingTape = new WritingTape(OUTPUT);
 
+        //todo rewrite source to output
         Record record;
         do {
             record = readingTape.readRecord();
@@ -41,8 +41,20 @@ public class Sorter {
 
     }
 
-    private boolean checkIfOutputSorted() {
+    private boolean checkIfOutputSorted() throws IOException {
+        ReadingTape readingTape = new ReadingTape(OUTPUT);
+        Record record = readingTape.readRecord();
+        Record nextRecord = readingTape.readRecord();
+
+        while (!record.data().isEmpty()) {
+            if (nextRecord.compareTo(record) < 0) {
+                return false;
+            }
+            record = nextRecord;
+            nextRecord = readingTape.readRecord();
+        }
         return true;
+
     }
 
     public void distribute(ReadingTape readingTape, WritingTape writingTape1, WritingTape writingTape2) throws IOException {

@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import pl.qjavascr.model.ReadingTape;
 import pl.qjavascr.model.WritingTape;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class SorterTest {
@@ -34,6 +33,6 @@ public class SorterTest {
     void testSort() throws IOException {
         ReadingTape readingTape = new ReadingTape("src/main/resources/resource.txt");
         String outputFileName = "src/main/resources/output.txt";
-        sorter.sort(readingTape,outputFileName);
+        sorter.sort(readingTape);
     }
 }
