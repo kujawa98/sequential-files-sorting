@@ -3,6 +3,7 @@ package pl.qjavascr.sorter;
 import org.junit.jupiter.api.Test;
 import pl.qjavascr.model.ReadingTape;
 import pl.qjavascr.model.WritingTape;
+import pl.qjavascr.service.RandomGenerator;
 
 import java.io.IOException;
 
@@ -31,8 +32,9 @@ public class SorterTest {
 
     @Test
     void testSort() throws IOException {
-        ReadingTape readingTape = new ReadingTape("src/main/resources/resource.txt");
-        String outputFileName = "src/main/resources/output.txt";
-        sorter.sort(readingTape);
+//        ReadingTape readingTape = new ReadingTape("src/main/resources/resource.txt");
+//        String outputFileName = "src/main/resources/output.txt";
+        RandomGenerator.randomTape(1000);
+        sorter.sort();
     }
 }

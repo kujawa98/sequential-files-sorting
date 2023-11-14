@@ -3,13 +3,13 @@ package pl.qjavascr.model;
 import org.junit.jupiter.api.Test;
 
 public class RecordTest {
-    Record record = new Record("fyzyhjwoolevsfgrkoll");
+    Record record = new Record("fyzyhjwoolevzzzsfgrkoll");
 
 
     @Test
-    void testSort(){
-        Record other = new Record("iercpjzzshhtqpevfzkb");
+    void testSort() {
+        Record other = new Record("iercpjzshhtqpevfzkb");
 
-        record.compareTo(other);
+        assert record.compareTo(other) > 0;
     }
 }

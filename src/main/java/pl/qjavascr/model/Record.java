@@ -19,32 +19,31 @@ public class Record implements Comparable<Record> {
         var dat = CollectionUtils.subtract(dataCopy, recDataCopy);
         var datRec = CollectionUtils.subtract(recDataCopy, dataCopy);
 
-        int returnCode = 0;
-
-
-        if (datRec.contains("") && dat.contains("")) {
+        if (dat.contains("") && datRec.contains("")) {
             return 0;
         }
         if (dat.contains("")) {
-            return 1;
-        }
-        if (datRec.contains("")) {
             return -1;
         }
+        if (datRec.contains("")) {
+            return 1;
+        }
 
+        int returnCode = 0;
 
         for (var character : dat) {
             var first = character.toCharArray();
             for (var secondCharacter : datRec) {
                 var second = secondCharacter.toCharArray();
-                if (first[0] == second[0]) {
-                    returnCode = 0;
+                if (first[0] > second[0]) {
+                    returnCode = 1;
                 } else if (first[0] < second[0]) {
                     returnCode = -1;
                     break;
-                } else {
-                    returnCode = 1;
                 }
+            }
+            if (returnCode == 1) {
+                break;
             }
         }
         return returnCode;
