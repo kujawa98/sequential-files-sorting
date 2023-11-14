@@ -2,7 +2,8 @@ package pl.qjavascr.model;
 
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 public class Record implements Comparable<Record> {
     private final String data;
@@ -19,13 +20,13 @@ public class Record implements Comparable<Record> {
         var dat = CollectionUtils.subtract(dataCopy, recDataCopy);
         var datRec = CollectionUtils.subtract(recDataCopy, dataCopy);
 
-        if (dat.contains("") && datRec.contains("")) {
+        if ((dat.isEmpty() || dat.contains("")) && (datRec.isEmpty() || datRec.contains(""))) {
             return 0;
         }
-        if (dat.contains("")) {
+        if (dat.isEmpty() || dat.contains("")) {
             return -1;
         }
-        if (datRec.contains("")) {
+        if (datRec.isEmpty() || datRec.contains("")) {
             return 1;
         }
 

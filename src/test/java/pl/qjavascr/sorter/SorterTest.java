@@ -1,11 +1,14 @@
 package pl.qjavascr.sorter;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.Test;
 import pl.qjavascr.model.ReadingTape;
 import pl.qjavascr.model.WritingTape;
 import pl.qjavascr.service.RandomGenerator;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 public class SorterTest {
     Sorter sorter = new Sorter();
@@ -27,14 +30,12 @@ public class SorterTest {
         ReadingTape readingTape2 = new ReadingTape("src/test/resources/writingTape2.txt");
         WritingTape writingTape = new WritingTape("src/test/resources/writing.txt");
 
-        sorter.merge(readingTape1, readingTape2, writingTape); //chcę aaaaaaaaacaaaaaaaaazaaaaaaaaawaaaaaaaaax
+        sorter.merge(readingTape1, readingTape2, writingTape);
     }
 
     @Test
     void testSort() throws IOException {
-//        ReadingTape readingTape = new ReadingTape("src/main/resources/resource.txt");
-//        String outputFileName = "src/main/resources/output.txt";
-        RandomGenerator.randomTape(1000);
+        RandomGenerator.randomTape(100);
         sorter.sort();
     }
 }

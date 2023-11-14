@@ -4,8 +4,6 @@ import pl.qjavascr.model.ReadingTape;
 import pl.qjavascr.model.Record;
 import pl.qjavascr.model.WritingTape;
 
-
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class Sorter {
@@ -13,34 +11,6 @@ public class Sorter {
     private static final String TEMP_TAPE_2 = "src/main/resources/tape2.txt";
     private static final String OUTPUT = "src/main/resources/output.txt";
     private boolean isNotSorted = true;
-
-//    public void sort(ReadingTape readingTape) throws IOException {
-//        WritingTape writingTape = new WritingTape(OUTPUT);
-//
-//        //todo rewrite source to output
-//        Record record;
-//        do {
-//            record = readingTape.readRecord();
-//            writingTape.writeRecord(record);
-//        } while (!record.data().isEmpty());
-//        writingTape.close();
-//        readingTape.close();
-//
-//        do {
-//            //todo distribute
-//            ReadingTape rdt = new ReadingTape(OUTPUT);
-//            WritingTape writingTape1 = new WritingTape(TEMP_TAPE_1);
-//            WritingTape writingTape2 = new WritingTape(TEMP_TAPE_2);
-//            distribute(rdt, writingTape1, writingTape2);
-//
-//            //todo merge
-//            ReadingTape readingTape1 = new ReadingTape(TEMP_TAPE_1);
-//            ReadingTape readingTape2 = new ReadingTape(TEMP_TAPE_2);
-//            WritingTape outputTape = new WritingTape(OUTPUT);
-//            merge(readingTape1, readingTape2, outputTape);
-//        } while (!checkIfOutputSorted());
-//
-//    }
 
     public void sort() throws IOException {
         while (isNotSorted) {
@@ -58,23 +28,6 @@ public class Sorter {
         }
 
     }
-
-//    private boolean checkIfOutputSorted() throws IOException {
-//        ReadingTape readingTape = new ReadingTape(OUTPUT);
-//        Record record = readingTape.readRecord();
-//        Record nextRecord = readingTape.readRecord();
-//        while (!nextRecord.data().isEmpty()) {
-//            if (nextRecord.compareTo(record) < 0) {
-//                readingTape.close();
-//                return false;
-//            }
-//            record = nextRecord;
-//            nextRecord = readingTape.readRecord();
-//        }
-//        readingTape.close();
-//        return true;
-//
-//    }
 
     public void distribute(ReadingTape readingTape, WritingTape writingTape1, WritingTape writingTape2) throws IOException {
         WritingTape toSave = writingTape1;

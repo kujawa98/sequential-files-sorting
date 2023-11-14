@@ -11,7 +11,7 @@ public class ReadingTape {
     private final String fileName;
     private final byte[] buffer;
     private int bufferReadIndex = 0;
-    private int blockDelimiter = BUFFER_SIZE;
+    private int blockDelimiter = BUFFER_SIZE; //zakładam że rozmiar bufora jest podzielny przez rozmiar bloku
 
     public ReadingTape(String fileName) throws IOException {
         this.fileName = fileName;
@@ -21,7 +21,7 @@ public class ReadingTape {
     }
 
     public Record readRecord() throws IOException {
-        if (bufferReadIndex == blockDelimiter) {
+        if (blockDelimiter == -1) {
             return new Record("");
         }
         byte[] bytes = new byte[RECORD_LEN];
@@ -29,26 +29,18 @@ public class ReadingTape {
             bytes[i] = buffer[bufferReadIndex++];
             if (bufferReadIndex == blockDelimiter) {
                 if (blockDelimiter < BUFFER_SIZE) {
+                    blockDelimiter = -1;
                     break;
                 }
-                try {
-                    blockDelimiter = readBuffer();
-                } catch (RuntimeException ex) {
+                blockDelimiter = tape.read(buffer);
+                if (blockDelimiter == -1) {
                     return new Record(new String(bytes).trim());
-                } finally {
+                } else {
                     bufferReadIndex = 0;
                 }
             }
         }
         return new Record(new String(bytes).trim());
-    }
-
-    private int readBuffer() throws IOException {
-        int result = tape.read(buffer);
-        if (result == -1) {
-            throw new RuntimeException("End of file");
-        }
-        return result;
     }
 
 

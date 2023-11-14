@@ -21,7 +21,7 @@ public class WritingTape {
     }
 
     public void writeRecord(Record record) {
-        if (record.data().isEmpty()){
+        if (record.data().isEmpty()) {
             return;
         }
         byte[] bytes = record.data().getBytes();
