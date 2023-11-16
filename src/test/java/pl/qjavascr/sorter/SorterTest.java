@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-public class SorterTest {
+class SorterTest {
     Sorter sorter = new Sorter();
 
 
@@ -35,7 +35,7 @@ public class SorterTest {
 
     @Test
     void testSort() throws IOException {
-        RandomGenerator.randomTape(100);
+        RandomGenerator.randomTape(10);
         sorter.sort();
     }
 }

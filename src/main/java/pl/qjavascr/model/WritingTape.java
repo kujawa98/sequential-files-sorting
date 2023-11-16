@@ -9,13 +9,12 @@ import static pl.qjavascr.util.ConstantsUtils.BUFFER_SIZE;
 import static pl.qjavascr.util.ConstantsUtils.RECORD_LEN;
 
 public class WritingTape {
+
     private final DataOutputStream tape;
-    private final String fileName;
-    private byte[] buffer;
-    private int bufferWriteIndex = 0;
+    private final byte[]           buffer;
+    private       int              bufferWriteIndex = 0;
 
     public WritingTape(String fileName) throws FileNotFoundException {
-        this.fileName = fileName;
         this.tape = new DataOutputStream(new FileOutputStream(fileName));
         this.buffer = new byte[BUFFER_SIZE];
     }
@@ -75,4 +74,5 @@ public class WritingTape {
             throw new RuntimeException(e);
         }
     }
+
 }

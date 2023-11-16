@@ -21,7 +21,7 @@ public class ReadingTape {
     }
 
     public Record readRecord() throws IOException {
-        if (blockDelimiter == -1) {
+        if (blockDelimiter == -1) { //delimiter równy -1 symbolizuje koniec pliku
             return new Record("");
         }
         byte[] bytes = new byte[RECORD_LEN];
