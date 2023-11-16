@@ -10,7 +10,7 @@ public class Sorter {
 
     private static final String  TEMP_TAPE_1 = "src/main/resources/tape1.txt";
     private static final String  TEMP_TAPE_2 = "src/main/resources/tape2.txt";
-    private static final String  OUTPUT      = "src/main/resources/output.txt";
+    private static final String  OUTPUT      = "src/main/resources/output.dat";
     private              boolean isNotSorted = true;
     private              int     fazy        = 0;
 
