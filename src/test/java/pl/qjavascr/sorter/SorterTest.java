@@ -8,6 +8,7 @@ import pl.qjavascr.model.ReadingTape;
 import pl.qjavascr.model.WritingTape;
 import pl.qjavascr.service.RandomGenerator;
 
+import static pl.qjavascr.util.ConstantsUtils.reads;
 import static pl.qjavascr.util.ConstantsUtils.writes;
 
 class SorterTest {
@@ -38,7 +39,8 @@ class SorterTest {
     void testSort() throws IOException {
         RandomGenerator.randomTape(1000);
         sorter.sort();
-        System.out.println(writes);
+        System.out.println("Writes " + writes);
+        System.out.println("Reads " + reads);
     }
 
 }
