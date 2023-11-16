@@ -1,14 +1,26 @@
 package pl.qjavascr.model;
 
-import org.apache.commons.collections4.CollectionUtils;
-
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 public class Record implements Comparable<Record> {
-    private final String data;
+
+    private       int     key;
+    private final String  data;
+    private       int     nextRecordPage;
+    private       int     nextRecordPosition;
+    private       boolean wasDeleted;
+    private       boolean isGuard;
+
+    public Record(int key, String data) {
+        this.key = key;
+        this.data = data;
+    }
 
     public Record(String data) {
+        this.key = -1;
         this.data = data;
     }
 
