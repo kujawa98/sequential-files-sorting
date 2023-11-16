@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import static pl.qjavascr.util.ConstantsUtils.BUFFER_SIZE;
 import static pl.qjavascr.util.ConstantsUtils.RECORD_LEN;
+import static pl.qjavascr.util.ConstantsUtils.writes;
 
 public class WritingTape {
 
@@ -40,7 +41,6 @@ public class WritingTape {
             }
             buffer[bufferWriteIndex++] = bytes[i];
             if (bufferWriteIndex == BUFFER_SIZE) {
-                System.out.println("Full buffer");
                 writeBuffer();
                 bufferWriteIndex = 0;
                 for (int j = i + 1; j < RECORD_LEN; j++) {
@@ -61,6 +61,7 @@ public class WritingTape {
     private void writeBuffer() {
         try {
             tape.write(buffer, 0, bufferWriteIndex);
+            writes++;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
