@@ -1,16 +1,18 @@
 package pl.qjavascr.sorter;
 
+import java.io.IOException;
+
 import pl.qjavascr.model.ReadingTape;
 import pl.qjavascr.model.Record;
 import pl.qjavascr.model.WritingTape;
 
-import java.io.IOException;
-
 public class Sorter {
-    private static final String TEMP_TAPE_1 = "src/main/resources/tape1.txt";
-    private static final String TEMP_TAPE_2 = "src/main/resources/tape2.txt";
-    private static final String OUTPUT = "src/main/resources/output.txt";
-    private boolean isNotSorted = true;
+
+    private static final String  TEMP_TAPE_1 = "src/main/resources/tape1.txt";
+    private static final String  TEMP_TAPE_2 = "src/main/resources/tape2.txt";
+    private static final String  OUTPUT      = "src/main/resources/output.txt";
+    private              boolean isNotSorted = true;
+    private              int     fazy        = 0;
 
     public void sort() throws IOException {
         while (isNotSorted) {
@@ -25,11 +27,15 @@ public class Sorter {
             ReadingTape readingTape2 = new ReadingTape(TEMP_TAPE_2);
             WritingTape outputTape = new WritingTape(OUTPUT);
             merge(readingTape1, readingTape2, outputTape);
+            fazy++;
         }
+        System.out.println("Fazy " + fazy);
 
     }
 
-    public void distribute(ReadingTape readingTape, WritingTape writingTape1, WritingTape writingTape2) throws IOException {
+    public void distribute(ReadingTape readingTape,
+                           WritingTape writingTape1,
+                           WritingTape writingTape2) throws IOException {
         WritingTape toSave = writingTape1;
         Record record = readingTape.readRecord();
         toSave.writeRecord(record);
@@ -68,7 +74,8 @@ public class Sorter {
             do {
                 writingTape.writeRecord(record2);
                 record2 = readingTape2.readRecord();
-            } while (!record2.data().isEmpty());
+            }
+            while (!record2.data().isEmpty());
             isNotSorted = false;
             readingTape1.close();
             readingTape2.close();
@@ -78,7 +85,8 @@ public class Sorter {
             do {
                 writingTape.writeRecord(record1);
                 record1 = readingTape1.readRecord();
-            } while (!record1.data().isEmpty());
+            }
+            while (!record1.data().isEmpty());
             isNotSorted = false;
             readingTape1.close();
             readingTape2.close();
@@ -91,13 +99,15 @@ public class Sorter {
                 do {
                     writingTape.writeRecord(record2);
                     record2 = readingTape2.readRecord();
-                } while (!record2.data().isEmpty());
+                }
+                while (!record2.data().isEmpty());
                 break;
             } else if (record2.data().isEmpty()) {
                 do {
                     writingTape.writeRecord(record1);
                     record1 = readingTape1.readRecord();
-                } while (!record1.data().isEmpty());
+                }
+                while (!record1.data().isEmpty());
                 break;
             } else if (record1.compareTo(record2) < 0) {
                 writingTape.writeRecord(record1);

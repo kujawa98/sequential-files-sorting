@@ -35,6 +35,7 @@ public class WritingTape {
                         buffer[bufferWriteIndex++] = ' ';
                     }
                     writeBuffer();
+                    writes++;
                     bufferWriteIndex = 0;
                 }
                 continue;
@@ -52,6 +53,7 @@ public class WritingTape {
 
                 }
                 writeBuffer();
+                writes++;
                 bufferWriteIndex = 0;
                 return;
             }
@@ -61,7 +63,6 @@ public class WritingTape {
     private void writeBuffer() {
         try {
             tape.write(buffer, 0, bufferWriteIndex);
-            writes++;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -37,7 +37,7 @@ class SorterTest {
 
     @Test
     void testSort() throws IOException {
-        RandomGenerator.randomTape(1000);
+        RandomGenerator.randomTape(10000);
         sorter.sort();
         System.out.println("Writes " + writes);
         System.out.println("Reads " + reads);
