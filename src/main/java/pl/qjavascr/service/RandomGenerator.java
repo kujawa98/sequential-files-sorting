@@ -10,7 +10,7 @@ import java.util.Random;
 public class RandomGenerator {
     private static final Random RANDOM = new Random();
     private static final int MAX_RECORD_LEN = 30;
-    private static final String OUTPUT = "src/main/resources/output.txt";
+    private static final String OUTPUT = "src/main/resources/output.dat";
 
     public static void randomTape(int howManyRecord) {
         WritingTape writingTape = null;

@@ -1,16 +1,18 @@
 package pl.qjavascr.sorter;
 
-import org.apache.commons.collections4.CollectionUtils;
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
+
 import pl.qjavascr.model.ReadingTape;
 import pl.qjavascr.model.WritingTape;
 import pl.qjavascr.service.RandomGenerator;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import static pl.qjavascr.util.ConstantsUtils.reads;
+import static pl.qjavascr.util.ConstantsUtils.writes;
 
-public class SorterTest {
+class SorterTest {
+
     Sorter sorter = new Sorter();
 
 
@@ -37,8 +39,9 @@ public class SorterTest {
     void testSort() throws IOException {
         RandomGenerator.randomTape(100000);
         sorter.sort();
+        System.out.println("Writes " + writes);
+        System.out.println("Reads " + reads);
     }
-
     @Test
     void testSortDefault() throws IOException {
         sorter.sortDefault();

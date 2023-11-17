@@ -4,14 +4,17 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import static pl.qjavascr.util.ConstantsUtils.*;
+import static pl.qjavascr.util.ConstantsUtils.BUFFER_SIZE;
+import static pl.qjavascr.util.ConstantsUtils.RECORD_LEN;
+import static pl.qjavascr.util.ConstantsUtils.reads;
 
 public class ReadingTape {
+
     private final DataInputStream tape;
-    private final String fileName;
-    private final byte[] buffer;
-    private int bufferReadIndex = 0;
-    private int blockDelimiter = BUFFER_SIZE; //zakładam że rozmiar bufora jest podzielny przez rozmiar bloku
+    private final String          fileName;
+    private final byte[]          buffer;
+    private       int             bufferReadIndex = 0;
+    private       int             blockDelimiter  = BUFFER_SIZE; //zakładam że rozmiar bufora jest podzielny przez rozmiar bloku
 
     public ReadingTape(String fileName) throws IOException {
         this.fileName = fileName;
@@ -20,8 +23,8 @@ public class ReadingTape {
         this.tape.read(this.buffer);
     }
 
-    public Record readRecord() throws IOException {
-        if (blockDelimiter == -1) {
+    public Record readRecord() {
+        if (blockDelimiter == -1) { //delimiter równy -1 symbolizuje koniec pliku
             return new Record("");
         }
         byte[] bytes = new byte[RECORD_LEN];
@@ -32,7 +35,7 @@ public class ReadingTape {
                     blockDelimiter = -1;
                     break;
                 }
-                blockDelimiter = tape.read(buffer);
+                blockDelimiter = read();
                 if (blockDelimiter == -1) {
                     return new Record(new String(bytes).trim());
                 } else {
@@ -43,8 +46,17 @@ public class ReadingTape {
         return new Record(new String(bytes).trim());
     }
 
+    private int read() {
+        try {
+            reads++;
+            return tape.read(buffer);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public void close() throws IOException {
         tape.close();
     }
+
 }

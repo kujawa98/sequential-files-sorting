@@ -7,15 +7,15 @@ import java.io.IOException;
 
 import static pl.qjavascr.util.ConstantsUtils.BUFFER_SIZE;
 import static pl.qjavascr.util.ConstantsUtils.RECORD_LEN;
+import static pl.qjavascr.util.ConstantsUtils.writes;
 
 public class WritingTape {
+
     private final DataOutputStream tape;
-    private final String fileName;
-    private byte[] buffer;
-    private int bufferWriteIndex = 0;
+    private final byte[]           buffer;
+    private       int              bufferWriteIndex = 0;
 
     public WritingTape(String fileName) throws FileNotFoundException {
-        this.fileName = fileName;
         this.tape = new DataOutputStream(new FileOutputStream(fileName));
         this.buffer = new byte[BUFFER_SIZE];
     }
@@ -35,13 +35,13 @@ public class WritingTape {
                         buffer[bufferWriteIndex++] = ' ';
                     }
                     writeBuffer();
+                    writes++;
                     bufferWriteIndex = 0;
                 }
                 continue;
             }
             buffer[bufferWriteIndex++] = bytes[i];
             if (bufferWriteIndex == BUFFER_SIZE) {
-                System.out.println("Full buffer");
                 writeBuffer();
                 bufferWriteIndex = 0;
                 for (int j = i + 1; j < RECORD_LEN; j++) {
@@ -53,6 +53,7 @@ public class WritingTape {
 
                 }
                 writeBuffer();
+                writes++;
                 bufferWriteIndex = 0;
                 return;
             }
@@ -75,4 +76,5 @@ public class WritingTape {
             throw new RuntimeException(e);
         }
     }
+
 }
