@@ -35,7 +35,12 @@ public class SorterTest {
 
     @Test
     void testSort() throws IOException {
-        RandomGenerator.randomTape(100);
+        RandomGenerator.randomTape(100000);
         sorter.sort();
+    }
+
+    @Test
+    void testSortDefault() throws IOException {
+        sorter.sortDefault();
     }
 }

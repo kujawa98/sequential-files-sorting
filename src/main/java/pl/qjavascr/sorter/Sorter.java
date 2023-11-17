@@ -10,6 +10,7 @@ public class Sorter {
     private static final String TEMP_TAPE_1 = "src/main/resources/tape1.txt";
     private static final String TEMP_TAPE_2 = "src/main/resources/tape2.txt";
     private static final String OUTPUT = "src/main/resources/output.txt";
+    private static final String DEFAULT = "src/main/resources/default.txt";
     private boolean isNotSorted = true;
 
     public void sort() throws IOException {
@@ -26,7 +27,19 @@ public class Sorter {
             WritingTape outputTape = new WritingTape(OUTPUT);
             merge(readingTape1, readingTape2, outputTape);
         }
+    }
 
+    public void sortDefault() throws IOException {
+        ReadingTape readingTape = new ReadingTape(DEFAULT);
+        WritingTape writingTape = new WritingTape(OUTPUT);
+        Record record = readingTape.readRecord();
+        do {
+            writingTape.writeRecord(record);
+            record = readingTape.readRecord();
+        } while (!record.data().isEmpty());
+        readingTape.close();
+        writingTape.close();
+        sort();
     }
 
     public void distribute(ReadingTape readingTape, WritingTape writingTape1, WritingTape writingTape2) throws IOException {
