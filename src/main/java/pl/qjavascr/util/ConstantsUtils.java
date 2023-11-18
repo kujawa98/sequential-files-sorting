@@ -2,9 +2,13 @@ package pl.qjavascr.util;
 
 public class ConstantsUtils {
 
-    public static final int BLOCK_SIZE  = 300;
-    public static final int RECORD_LEN  = 30;
-    public static final int BUFFER_SIZE = BLOCK_SIZE;
+    public static final int PAGE_SIZE = 157;
+    public static final int RECORD_LEN = 39;
+    public static final int BUFFER_SIZE = 2 * PAGE_SIZE;
+    public static final double ALPHA = 0.5d;
+    public static final double BETA = 0.2d;
+    public static final int RECORDS_PER_PAGE = (PAGE_SIZE - 1) / RECORD_LEN;
+
 
     private ConstantsUtils() {
     }
