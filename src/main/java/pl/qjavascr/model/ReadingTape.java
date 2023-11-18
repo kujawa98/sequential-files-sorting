@@ -48,35 +48,55 @@ public class ReadingTape {
         for (int i = 0; i < buffer.length; i += PAGE_SIZE) {
             int currentPageNumber = buffer[i];
             if (currentPageNumber == pageNumber) {
-                List<Record> records = new ArrayList<>();
-                for (int j = 0; j < RECORDS_PER_PAGE; j++) {
-                    records.add(transformBytesToRecord(i + 1));
-                }
+                return trasnformBytesToPage(i);
             }
         }
-        return new Page();
+        long requestedPageNumberFilePointer = (long) (pageNumber - 1) * PAGE_SIZE;
+        var len = tape.length();
+        var cokur = len - PAGE_SIZE;
+        if (requestedPageNumberFilePointer > cokur) {
+            return new Page();
+        }
+        tape.seek(requestedPageNumberFilePointer);
+        tape.read(buffer);
+        return trasnformBytesToPage(0);
+    }
+
+    private Page trasnformBytesToPage(int position) {
+        int pageNumber = buffer[position];
+        List<Record> records = new ArrayList<>();
+        for (int i = 0; i < RECORDS_PER_PAGE; i++) {
+            var record = transformBytesToRecord(position + 1);
+            records.add(record);
+            position += RECORD_LEN;
+            if (record.isLastOnPage()) {
+                break;
+            }
+        }
+        return new Page(pageNumber, records);
     }
 
     private Record transformBytesToRecord(int position) {
         int key = (buffer[position] << 24) | (buffer[position + 1] << 16) | (buffer[position + 2] << 8) | (buffer[position + 3]);
         position += 4;
-        String data = "";
+        StringBuilder data = new StringBuilder();
         for (int i = 0; i < 30; i++) {
-//            data += byteDoStringa
+            data.append((char) (buffer[position + i]));
         }
         position += 30;
         byte overflowRecordPage = buffer[position++];
         byte overflowRecordPosition = buffer[position++];
         boolean wasDeleted = buffer[position++] != 0;
-        boolean isGuard = buffer[position++] != 0;
-        return Record.builder().key(key).data(data).overflowRecordPage(overflowRecordPage).overflowRecordPosition(overflowRecordPosition).wasDeleted(wasDeleted).isGuard(isGuard).build();
+        boolean isLastOnPage = buffer[position++] != 0;
+        return Record.builder().key(key).data(data.toString()).overflowRecordPage(overflowRecordPage).overflowRecordPosition(overflowRecordPosition).wasDeleted(wasDeleted).isLastOnPage(isLastOnPage).build();
     }
 
     public Record readRecord(int pageNumber, int key) throws IOException { //pageNumber i key otrzymujemy z indeksu
-        long currentPageNumber = tape.getFilePointer() / PAGE_SIZE;
-        if (pageNumber != currentPageNumber) { //strony o numerze pageNumber nie ma w buforze
-            tape.seek((long) pageNumber * PAGE_SIZE);
-
+        Page page = readPage(pageNumber);
+        for (var record : page.getRecords()) {
+            if (record.getKey() == key) {
+                return record;
+            }
         }
         return null;
     }

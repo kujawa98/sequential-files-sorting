@@ -30,12 +30,9 @@ public class WritingTapeTest {
 
     @Test
     void testGowno() throws IOException {
-        RandomAccessFile tape = new RandomAccessFile("src/test/resources/writing.dat", "r");
-        byte[] buffer = new byte[BUFFER_SIZE];
-        var fp = tape.getFilePointer();
-        tape.seek(PAGE_SIZE);
-        fp = tape.getFilePointer();
-        tape.read(buffer, 0, BUFFER_SIZE);
-        tape.close();
+        ReadingTape readingTape = new ReadingTape("src/test/resources/writing.dat");
+        var page = readingTape.readPage(1);
+        page = readingTape.readPage(4);
+        System.out.println(page);
     }
 }
