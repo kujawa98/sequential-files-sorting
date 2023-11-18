@@ -1,16 +1,19 @@
 package pl.qjavascr.service;
 
-import org.apache.commons.lang3.RandomStringUtils;
-import pl.qjavascr.model.Record;
-import pl.qjavascr.model.WritingTape;
-
 import java.io.FileNotFoundException;
 import java.util.Random;
 
+import org.apache.commons.lang3.RandomStringUtils;
+
+import pl.qjavascr.model.Record;
+import pl.qjavascr.model.WritingTape;
+
 public class RandomGenerator {
-    private static final Random RANDOM = new Random();
-    private static final int MAX_RECORD_LEN = 30;
-    private static final String OUTPUT = "src/main/resources/output.txt";
+
+    private static final Random RANDOM         = new Random();
+    private static final int    MAX_RECORD_LEN = 30;
+    private static final String OUTPUT         = "src/main/resources/output.txt";
+    private static final String NULL           = Character.toString((char) 0);
 
     public static void randomTape(int howManyRecord) {
         WritingTape writingTape = null;
@@ -23,10 +26,11 @@ public class RandomGenerator {
             StringBuilder tapeString = new StringBuilder();
             int howManyCharacters = RANDOM.nextInt(MAX_RECORD_LEN) + 1;
             tapeString.append(RandomStringUtils.randomAlphabetic(howManyCharacters).toLowerCase());
-            tapeString.append(" ".repeat(MAX_RECORD_LEN - howManyCharacters));
+            tapeString.append(NULL.repeat(MAX_RECORD_LEN - howManyCharacters));
             String toWrite = tapeString.toString();
             writingTape.writeRecord(new Record(toWrite));
         }
         writingTape.close();
     }
+
 }

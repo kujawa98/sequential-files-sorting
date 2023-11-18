@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 
 public class Record implements Comparable<Record> {
-
+    //całkowity rozmiar rekordu to 4+30+4+4+1+1=44
     private       int     key;
     private final String  data;
     private       int     nextRecordPage;
