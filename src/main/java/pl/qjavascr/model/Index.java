@@ -1,14 +1,11 @@
 package pl.qjavascr.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Index {
+    private final int key; //całkowity rozmiar wpisu ma 4+4=8 bajtów
+    private final int pageNumber;
 
-    private final List<Integer> keys = new ArrayList<>();
-    private int records = 0;
-    private int mainAreaRecords = 0;
-    private int overflowRecords = 0;
-    private int deletedRecords = 0;
-
+    public Index(int key, int pageNumber) {
+        this.key = key;
+        this.pageNumber = pageNumber;
+    }
 }

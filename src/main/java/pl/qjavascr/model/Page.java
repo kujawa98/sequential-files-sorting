@@ -5,18 +5,18 @@ import lombok.Getter;
 import java.util.Collections;
 import java.util.List;
 
-public class Page {
+public class Page<T> {
     private final int pageNumber;
     @Getter
-    private final List<Record> records;
+    private final List<T> data;
 
-    public Page(int pageNumber, List<Record> records) {
+    public Page(int pageNumber, List<T> records) {
         this.pageNumber = pageNumber;
-        this.records = records;
+        this.data = records;
     }
 
     public Page() {
         this.pageNumber = -1;
-        this.records = Collections.emptyList();
+        this.data = Collections.emptyList();
     }
 }
