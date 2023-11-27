@@ -11,13 +11,11 @@ import static pl.qjavascr.util.ConstantsUtils.reads;
 public class ReadingTape {
 
     private final DataInputStream tape;
-    private final String          fileName;
-    private final byte[]          buffer;
-    private       int             bufferReadIndex = 0;
-    private       int             blockDelimiter  = BUFFER_SIZE; //zakładam że rozmiar bufora jest podzielny przez rozmiar bloku
+    private final byte[] buffer;
+    private int bufferReadIndex = 0;
+    private int blockDelimiter = BUFFER_SIZE; //zakładam że rozmiar bufora jest podzielny przez rozmiar bloku
 
     public ReadingTape(String fileName) throws IOException {
-        this.fileName = fileName;
         this.tape = new DataInputStream(new FileInputStream(fileName));
         this.buffer = new byte[BUFFER_SIZE];
         this.tape.read(this.buffer);

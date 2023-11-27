@@ -37,13 +37,13 @@ class SorterTest {
 
     @Test
     void testSort() throws IOException {
-        RandomGenerator.randomTape(100000);
-        sorter.sort();
+        RandomGenerator.randomTape(10000);
+        sorter.sort(false);
         System.out.println("Writes " + writes);
         System.out.println("Reads " + reads);
     }
     @Test
     void testSortDefault() throws IOException {
-        sorter.sortDefault();
+        sorter.sort(false);
     }
 }

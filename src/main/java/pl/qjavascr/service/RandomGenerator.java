@@ -13,7 +13,7 @@ public class RandomGenerator {
     private static final String OUTPUT = "src/main/resources/output.dat";
 
     public static void randomTape(int howManyRecord) {
-        WritingTape writingTape = null;
+        WritingTape writingTape;
         try {
             writingTape = new WritingTape(OUTPUT);
         } catch (FileNotFoundException e) {
