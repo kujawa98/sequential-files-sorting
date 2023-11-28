@@ -1,21 +1,22 @@
 package pl.qjavascr.sorter;
 
-import java.io.IOException;
-
 import pl.qjavascr.model.ReadingTape;
 import pl.qjavascr.model.Record;
 import pl.qjavascr.model.WritingTape;
 
+import java.io.IOException;
+
 public class Sorter {
 
-    private static final String  TEMP_TAPE_1 = "src/main/resources/tape1.dat";
-    private static final String  TEMP_TAPE_2 = "src/main/resources/tape2.dat";
-    private static final String  OUTPUT      = "src/main/resources/output.dat";
-    private static final String  DEFAULT     = "src/main/resources/default.dat";
-    private              boolean isNotSorted = true;
-    private              int     phases      = 0;
+    private static final String TEMP_TAPE_1 = "src/main/resources/tape1.dat";
+    private static final String TEMP_TAPE_2 = "src/main/resources/tape2.dat";
+    private static final String OUTPUT = "src/main/resources/output.dat";
+    private static final String DEFAULT = "src/main/resources/default.dat";
+    private boolean isNotSorted = true;
 
     public void sort(boolean printAfterPhase) throws IOException {
+        isNotSorted = true;
+        int phases = 0;
         while (isNotSorted) {
             //todo distribute
             ReadingTape rdt = new ReadingTape(OUTPUT);

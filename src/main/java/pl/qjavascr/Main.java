@@ -1,27 +1,61 @@
 package pl.qjavascr;
 
-import pl.qjavascr.model.ReadingTape;
+import pl.qjavascr.service.FromKeyboardGenerator;
+import pl.qjavascr.service.RandomGenerator;
 import pl.qjavascr.sorter.Sorter;
 
 import java.io.IOException;
+import java.util.Scanner;
 
 public class Main {
+    private static final Sorter sorter = new Sorter();
+
     public static void main(String[] args) throws IOException {
-        ReadingTape readingTape = new ReadingTape("src/main/resources/resource.txt");
-        for (int i = 0; i < 5; i++) {
-            var bl = readingTape.readRecord();
-            System.out.println(bl.data());
+        int choice;
+        Scanner input = new Scanner(System.in);
+        boolean running = true;
+        while (running) {
+            System.out.println("  1. Generate random records");
+            System.out.println("  2. Read record from keyboard");
+            System.out.println("  3. Import from file");
+            System.out.println("  4. Print records file");
+            System.out.println("  5. Sort");
+            System.out.println("  6. Sort with  print after each phase");
+            System.out.println("  7. Quit");
+            System.out.println("Choose one:");
+            choice = input.nextInt();
+
+            switch (choice) {
+                case 1 -> {
+                    System.out.println("How many records?");
+                    RandomGenerator.randomTape(input.nextInt());
+                }
+                case 2 -> {
+                    System.out.println("How many records?");
+                    FromKeyboardGenerator.readFromKeyboard(input.nextInt());
+                }
+                case 3 -> {
+                    System.out.println("Which file? File should be in src/main/resources/ directory");
+                    input.nextLine();
+                    String in = input.nextLine();
+                }
+                case 4 -> System.out.println();
+                case 5 -> {
+                    System.out.println("Sorting");
+                    sorter.sort(false);
+                }
+                case 6 -> {
+                    System.out.println("Sorting with printing after every phase");
+                    sorter.sort(true);
+                }
+                case 7 -> {
+                    System.out.println("Exit");
+                    running = false;
+                }
+                default -> System.out.println("Uknown value");
+            }
         }
-        var bl = readingTape.readRecord();
-        readingTape.close();
-        System.out.println();
+        input.close();
 
-
-//        ReadingTape readingTape = new ReadingTape("src/main/resources/resource.txt");
-//        readingTape.readRecord();
-//        Sorter sorter = new Sorter();
-//        ReadingTape readingTape1 = new ReadingTape("src/main/resources/readingTape1");
-//        ReadingTape readingTape2 = new ReadingTape("src/main/resources/readingTape2");
-//        sorter.distribute(readingTape, readingTape1, readingTape2);
     }
 }
