@@ -1,5 +1,7 @@
 package pl.qjavascr;
 
+import pl.qjavascr.service.FilePrinter;
+import pl.qjavascr.service.FileRewriter;
 import pl.qjavascr.service.FromKeyboardGenerator;
 import pl.qjavascr.service.RandomGenerator;
 import pl.qjavascr.sorter.Sorter;
@@ -37,9 +39,15 @@ public class Main {
                 case 3 -> {
                     System.out.println("Which file? File should be in src/main/resources/ directory");
                     input.nextLine();
-                    String in = input.nextLine();
+                    String path = input.nextLine();
+                    FileRewriter.rewriteFile(path);
                 }
-                case 4 -> System.out.println();
+                case 4 -> {
+                    System.out.println("Which file? File should be in src/main/resources/ directory");
+                    input.nextLine();
+                    String path = input.nextLine();
+                    FilePrinter.printFileContent("src/main/resources/" + path);
+                }
                 case 5 -> {
                     System.out.println("Sorting");
                     sorter.sort(false);
