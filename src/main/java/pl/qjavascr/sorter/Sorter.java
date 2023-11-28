@@ -8,12 +8,12 @@ import pl.qjavascr.model.WritingTape;
 
 public class Sorter {
 
-    private static final String TEMP_TAPE_1 = "src/main/resources/tape1.dat";
-    private static final String TEMP_TAPE_2 = "src/main/resources/tape2.dat";
-    private static final String OUTPUT = "src/main/resources/output.dat";
-    private static final String DEFAULT = "src/main/resources/default.dat";
-    private boolean isNotSorted = true;
-    private int fazy = 0;
+    private static final String  TEMP_TAPE_1 = "src/main/resources/tape1.dat";
+    private static final String  TEMP_TAPE_2 = "src/main/resources/tape2.dat";
+    private static final String  OUTPUT      = "src/main/resources/output.dat";
+    private static final String  DEFAULT     = "src/main/resources/default.dat";
+    private              boolean isNotSorted = true;
+    private              int     phases      = 0;
 
     public void sort(boolean printAfterPhase) throws IOException {
         while (isNotSorted) {
@@ -28,9 +28,9 @@ public class Sorter {
             ReadingTape readingTape2 = new ReadingTape(TEMP_TAPE_2);
             WritingTape outputTape = new WritingTape(OUTPUT);
             merge(readingTape1, readingTape2, outputTape);
-            fazy++;
+            phases++;
             if (printAfterPhase) {
-                System.out.println("Faza " + fazy);
+                System.out.println("Faza " + phases);
                 System.out.println("Output tape: ");
                 printFileContent(new ReadingTape(OUTPUT));
                 System.out.println("First tape: ");
@@ -40,21 +40,22 @@ public class Sorter {
                 System.out.println();
             }
         }
-        System.out.println("Fazy " + fazy);
+        System.out.println("Fazy " + phases);
 
     }
 
-    public void sortDefault() throws IOException {
+    public void sortDefault(boolean printAfterPhase) throws IOException {
         ReadingTape readingTape = new ReadingTape(DEFAULT);
         WritingTape writingTape = new WritingTape(OUTPUT);
         Record record = readingTape.readRecord();
         do {
             writingTape.writeRecord(record);
             record = readingTape.readRecord();
-        } while (!record.data().isEmpty());
+        }
+        while (!record.data().isEmpty());
         readingTape.close();
         writingTape.close();
-        sort(false);
+        sort(printAfterPhase);
     }
 
     public void distribute(ReadingTape readingTape,
@@ -172,13 +173,14 @@ public class Sorter {
         writingTape.close();
     }
 
-    private void printFileContent(ReadingTape readingTape) {
+    private void printFileContent(ReadingTape readingTape) throws IOException {
         Record record = readingTape.readRecord();
         while (!record.data().isEmpty()) {
             System.out.print(record.data() + " ");
             record = readingTape.readRecord();
         }
         System.out.println();
+        readingTape.close();
     }
 
 }
