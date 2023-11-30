@@ -7,7 +7,6 @@ import java.io.IOException;
 
 import static pl.qjavascr.util.ConstantsUtils.BUFFER_SIZE;
 import static pl.qjavascr.util.ConstantsUtils.RECORD_LEN;
-import static pl.qjavascr.util.ConstantsUtils.writes;
 
 public class WritingTape {
 
@@ -36,7 +35,6 @@ public class WritingTape {
                     }
                     writeBuffer();
                     bufferWriteIndex = 0;
-                    writes++;
                 }
                 continue;
             }
@@ -50,11 +48,9 @@ public class WritingTape {
                         continue;
                     }
                     buffer[bufferWriteIndex++] = bytes[j];
-
                 }
                 writeBuffer();
                 bufferWriteIndex = 0;
-                writes++;
                 return;
             }
         }

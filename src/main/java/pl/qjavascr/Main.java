@@ -9,8 +9,6 @@ import pl.qjavascr.sorter.Sorter;
 import java.io.IOException;
 import java.util.Scanner;
 
-import static pl.qjavascr.util.ConstantsUtils.reads;
-import static pl.qjavascr.util.ConstantsUtils.writes;
 
 public class Main {
     private static final Sorter sorter = new Sorter();
@@ -65,8 +63,6 @@ public class Main {
                 }
                 default -> System.out.println("Uknown value");
             }
-            writes = 0;
-            reads = 0;
         }
         input.close();
 

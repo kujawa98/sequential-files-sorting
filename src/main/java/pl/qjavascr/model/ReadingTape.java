@@ -6,7 +6,6 @@ import java.io.IOException;
 
 import static pl.qjavascr.util.ConstantsUtils.BUFFER_SIZE;
 import static pl.qjavascr.util.ConstantsUtils.RECORD_LEN;
-import static pl.qjavascr.util.ConstantsUtils.reads;
 
 public class ReadingTape {
 
@@ -46,7 +45,6 @@ public class ReadingTape {
 
     private int read() {
         try {
-            reads++;
             return tape.read(buffer);
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -7,6 +7,7 @@ import pl.qjavascr.model.WritingTape;
 import java.io.FileNotFoundException;
 import java.util.Random;
 
+
 public class RandomGenerator {
     private static final Random RANDOM = new Random();
     private static final int MAX_RECORD_LEN = 30;
