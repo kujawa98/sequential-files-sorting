@@ -35,8 +35,8 @@ public class WritingTape {
                         buffer[bufferWriteIndex++] = ' ';
                     }
                     writeBuffer();
-                    writes++;
                     bufferWriteIndex = 0;
+                    writes++;
                 }
                 continue;
             }
@@ -53,8 +53,8 @@ public class WritingTape {
 
                 }
                 writeBuffer();
-                writes++;
                 bufferWriteIndex = 0;
+                writes++;
                 return;
             }
         }

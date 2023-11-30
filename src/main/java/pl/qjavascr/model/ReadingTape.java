@@ -18,7 +18,7 @@ public class ReadingTape {
     public ReadingTape(String fileName) throws IOException {
         this.tape = new DataInputStream(new FileInputStream(fileName));
         this.buffer = new byte[BUFFER_SIZE];
-        this.tape.read(this.buffer);
+        this.read();
     }
 
     public Record readRecord() {
