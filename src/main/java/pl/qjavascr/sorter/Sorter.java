@@ -6,6 +6,9 @@ import pl.qjavascr.model.WritingTape;
 
 import java.io.IOException;
 
+import static pl.qjavascr.util.ConstantsUtils.reads;
+import static pl.qjavascr.util.ConstantsUtils.writes;
+
 public class Sorter {
 
     private static final String TEMP_TAPE_1 = "src/main/resources/tape1.dat";
@@ -31,7 +34,7 @@ public class Sorter {
             merge(readingTape1, readingTape2, outputTape);
             phases++;
             if (printAfterPhase) {
-                System.out.println("Faza " + phases);
+                System.out.println("Phase " + phases);
                 System.out.println("Output tape: ");
                 printFileContent(new ReadingTape(OUTPUT));
                 System.out.println("First tape: ");
@@ -41,8 +44,10 @@ public class Sorter {
                 System.out.println();
             }
         }
-        System.out.println("Fazy " + phases);
-
+        System.out.println("Phases " + phases);
+        System.out.println("Disk writes: " + writes);
+        System.out.println("Disk reads: " + reads);
+        System.out.println("Both " + (writes + reads));
     }
 
     public void sortDefault(boolean printAfterPhase) throws IOException {
