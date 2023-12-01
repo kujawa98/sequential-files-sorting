@@ -20,7 +20,7 @@ class SorterTest {
     void testDistribution() throws IOException {
         WritingTape writingTape1 = new WritingTape("src/test/resources/writingTape1.txt");
         WritingTape writingTape2 = new WritingTape("src/test/resources/writingTape2.txt");
-        ReadingTape outputReadingTape = new ReadingTape("src/test/resources/resource.txt");
+        ReadingTape outputReadingTape = new ReadingTape("src/test/resources/resource.txt",false);
 
         sorter.distribute(outputReadingTape, writingTape1, writingTape2);
 
@@ -28,8 +28,8 @@ class SorterTest {
 
     @Test
     void testMerge() throws IOException {
-        ReadingTape readingTape1 = new ReadingTape("src/test/resources/writingTape1.txt");
-        ReadingTape readingTape2 = new ReadingTape("src/test/resources/writingTape2.txt");
+        ReadingTape readingTape1 = new ReadingTape("src/test/resources/writingTape1.txt",false);
+        ReadingTape readingTape2 = new ReadingTape("src/test/resources/writingTape2.txt",false);
         WritingTape writingTape = new WritingTape("src/test/resources/writing.txt");
 
         sorter.merge(readingTape1, readingTape2, writingTape);

@@ -6,72 +6,61 @@ import pl.qjavascr.model.WritingTape;
 
 import java.io.IOException;
 
+import static pl.qjavascr.util.ConstantsUtils.reads;
+import static pl.qjavascr.util.ConstantsUtils.writes;
+
 public class Sorter {
 
     private static final String TEMP_TAPE_1 = "src/main/resources/tape1.dat";
     private static final String TEMP_TAPE_2 = "src/main/resources/tape2.dat";
     private static final String OUTPUT = "src/main/resources/output.dat";
-    private static final String DEFAULT = "src/main/resources/default.dat";
     private boolean isNotSorted = true;
 
     public void sort(boolean printAfterPhase) throws IOException {
         isNotSorted = true;
         int phases = 0;
-        int diskOperations = 0;
         while (isNotSorted) {
             //todo distribute
-            ReadingTape rdt = new ReadingTape(OUTPUT);
+            ReadingTape rdt = new ReadingTape(OUTPUT, true);
             WritingTape writingTape1 = new WritingTape(TEMP_TAPE_1);
             WritingTape writingTape2 = new WritingTape(TEMP_TAPE_2);
             distribute(rdt, writingTape1, writingTape2);
 
             //todo merge
-            ReadingTape readingTape1 = new ReadingTape(TEMP_TAPE_1);
-            ReadingTape readingTape2 = new ReadingTape(TEMP_TAPE_2);
+            ReadingTape readingTape1 = new ReadingTape(TEMP_TAPE_1, true);
+            ReadingTape readingTape2 = new ReadingTape(TEMP_TAPE_2, true);
             WritingTape outputTape = new WritingTape(OUTPUT);
             merge(readingTape1, readingTape2, outputTape);
             phases++;
-            diskOperations += 4;
             if (printAfterPhase) {
                 System.out.println("Phase " + phases);
                 System.out.println("Output tape: ");
-                printFileContent(new ReadingTape(OUTPUT));
+                printFileContent(new ReadingTape(OUTPUT, false));
                 System.out.println("First tape: ");
-                printFileContent(new ReadingTape(TEMP_TAPE_1));
+                printFileContent(new ReadingTape(TEMP_TAPE_1, false));
                 System.out.println("Second tape: ");
-                printFileContent(new ReadingTape(TEMP_TAPE_2));
+                printFileContent(new ReadingTape(TEMP_TAPE_2, false));
                 System.out.println();
             }
+
         }
         System.out.println("Phases " + phases);
-        System.out.println("Disk operations " + diskOperations);
-    }
-
-    public void sortDefault(boolean printAfterPhase) throws IOException {
-        ReadingTape readingTape = new ReadingTape(DEFAULT);
-        WritingTape writingTape = new WritingTape(OUTPUT);
-        Record record = readingTape.readRecord();
-        do {
-            writingTape.writeRecord(record);
-            record = readingTape.readRecord();
-        }
-        while (!record.data().isEmpty());
-        readingTape.close();
-        writingTape.close();
-        sort(printAfterPhase);
+        System.out.println("Writes " + writes);
+        System.out.println("Reads " + reads);
+        System.out.println("Both " + (reads + writes));
     }
 
     public void distribute(ReadingTape readingTape,
                            WritingTape writingTape1,
                            WritingTape writingTape2) throws IOException {
         WritingTape toSave = writingTape1;
-        Record record = readingTape.readRecord();
+        Record record = readingTape.readRecord(true);
         toSave.writeRecord(record);
 
         while (true) {
             Record newRecord;
 
-            newRecord = readingTape.readRecord();
+            newRecord = readingTape.readRecord(true);
 
             if (newRecord.data().isEmpty()) {
                 break;
@@ -93,15 +82,15 @@ public class Sorter {
     }
 
     public void merge(ReadingTape readingTape1, ReadingTape readingTape2, WritingTape writingTape) throws IOException {
-        Record record1 = readingTape1.readRecord();
-        Record record2 = readingTape2.readRecord();
+        Record record1 = readingTape1.readRecord(true);
+        Record record2 = readingTape2.readRecord(true);
         Record newRecord1;
         Record newRecord2;
 
         if (record1.data().isEmpty()) { //todo tutaj sprawdzam któryś plik jest pusty, jeśli tak to posortowane
             do {
                 writingTape.writeRecord(record2);
-                record2 = readingTape2.readRecord();
+                record2 = readingTape2.readRecord(false);
             }
             while (!record2.data().isEmpty());
             isNotSorted = false;
@@ -112,7 +101,7 @@ public class Sorter {
         } else if (record2.data().isEmpty()) {
             do {
                 writingTape.writeRecord(record1);
-                record1 = readingTape1.readRecord();
+                record1 = readingTape1.readRecord(false);
             }
             while (!record1.data().isEmpty());
             isNotSorted = false;
@@ -126,24 +115,24 @@ public class Sorter {
             if (record1.data().isEmpty()) {
                 do {
                     writingTape.writeRecord(record2);
-                    record2 = readingTape2.readRecord();
+                    record2 = readingTape2.readRecord(true);
                 }
                 while (!record2.data().isEmpty());
                 break;
             } else if (record2.data().isEmpty()) {
                 do {
                     writingTape.writeRecord(record1);
-                    record1 = readingTape1.readRecord();
+                    record1 = readingTape1.readRecord(true);
                 }
                 while (!record1.data().isEmpty());
                 break;
             } else if (record1.compareTo(record2) < 0) {
                 writingTape.writeRecord(record1);
-                newRecord1 = readingTape1.readRecord();
+                newRecord1 = readingTape1.readRecord(true);
                 if (newRecord1.data().isEmpty() || newRecord1.compareTo(record1) < 0) { //koniec serii
                     while (true) {
                         writingTape.writeRecord(record2);
-                        newRecord2 = readingTape2.readRecord();
+                        newRecord2 = readingTape2.readRecord(true);
                         if (newRecord2.data().isEmpty() || newRecord2.compareTo(record2) < 0) {
                             record2 = newRecord2;
                             break;
@@ -155,11 +144,11 @@ public class Sorter {
                 record1 = newRecord1;
             } else {
                 writingTape.writeRecord(record2);
-                newRecord2 = readingTape2.readRecord();
+                newRecord2 = readingTape2.readRecord(true);
                 if (newRecord2.data().isEmpty() || newRecord2.compareTo(record2) < 0) { //koniec serii
                     while (true) {
                         writingTape.writeRecord(record1);
-                        newRecord1 = readingTape1.readRecord();
+                        newRecord1 = readingTape1.readRecord(true);
                         if (newRecord1.data().isEmpty() || newRecord1.compareTo(record1) < 0) {
                             record1 = newRecord1;
                             break;
@@ -177,10 +166,10 @@ public class Sorter {
     }
 
     private void printFileContent(ReadingTape readingTape) throws IOException {
-        Record record = readingTape.readRecord();
+        Record record = readingTape.readRecord(false);
         while (!record.data().isEmpty()) {
             System.out.print(record.data() + " ");
-            record = readingTape.readRecord();
+            record = readingTape.readRecord(false);
         }
         System.out.println();
         readingTape.close();

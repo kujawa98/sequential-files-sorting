@@ -5,14 +5,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import static pl.qjavascr.util.ConstantsUtils.BUFFER_SIZE;
-import static pl.qjavascr.util.ConstantsUtils.RECORD_LEN;
+import static pl.qjavascr.util.ConstantsUtils.*;
 
 public class WritingTape {
 
     private final DataOutputStream tape;
-    private final byte[]           buffer;
-    private       int              bufferWriteIndex = 0;
+    private final byte[] buffer;
+    private int bufferWriteIndex = 0;
+    private boolean everReachedFullBuffer = false;
 
     public WritingTape(String fileName) throws FileNotFoundException {
         this.tape = new DataOutputStream(new FileOutputStream(fileName));
@@ -30,6 +30,8 @@ public class WritingTape {
                 if (bufferWriteIndex == BUFFER_SIZE) {
                     writeBuffer();
                     bufferWriteIndex = 0;
+                    writes += 1;
+                    everReachedFullBuffer = true;
                     for (int j = i + 1; j < RECORD_LEN; j++) {
                         buffer[bufferWriteIndex++] = ' ';
                     }
@@ -42,6 +44,8 @@ public class WritingTape {
             if (bufferWriteIndex == BUFFER_SIZE) {
                 writeBuffer();
                 bufferWriteIndex = 0;
+                writes += 1;
+                everReachedFullBuffer = true;
                 for (int j = i + 1; j < RECORD_LEN; j++) {
                     if (j > bytes.length - 1) {
                         buffer[bufferWriteIndex++] = ' ';
@@ -54,11 +58,13 @@ public class WritingTape {
                 return;
             }
         }
+
     }
 
     private void writeBuffer() {
         try {
             tape.write(buffer, 0, bufferWriteIndex);
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -67,6 +73,9 @@ public class WritingTape {
     public void close() {
         try {
             writeBuffer();
+            if (!everReachedFullBuffer) {
+                writes++;
+            }
             tape.close();
         } catch (IOException e) {
             throw new RuntimeException(e);

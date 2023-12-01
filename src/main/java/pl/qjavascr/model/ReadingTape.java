@@ -4,8 +4,7 @@ import java.io.DataInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import static pl.qjavascr.util.ConstantsUtils.BUFFER_SIZE;
-import static pl.qjavascr.util.ConstantsUtils.RECORD_LEN;
+import static pl.qjavascr.util.ConstantsUtils.*;
 
 public class ReadingTape {
 
@@ -14,13 +13,13 @@ public class ReadingTape {
     private int bufferReadIndex = 0;
     private int blockDelimiter = BUFFER_SIZE; //zakładam że rozmiar bufora jest podzielny przez rozmiar bloku
 
-    public ReadingTape(String fileName) throws IOException {
+    public ReadingTape(String fileName, boolean shouldIncrement) throws IOException {
         this.tape = new DataInputStream(new FileInputStream(fileName));
         this.buffer = new byte[BUFFER_SIZE];
-        this.read();
+        this.read(shouldIncrement);
     }
 
-    public Record readRecord() {
+    public Record readRecord(boolean shouldIncrement) {
         if (blockDelimiter == -1) { //delimiter równy -1 symbolizuje koniec pliku
             return new Record("");
         }
@@ -32,7 +31,7 @@ public class ReadingTape {
                     blockDelimiter = -1;
                     break;
                 }
-                blockDelimiter = read();
+                blockDelimiter = read(shouldIncrement);
                 if (blockDelimiter == -1) {
                     return new Record(new String(bytes).trim());
                 } else {
@@ -43,8 +42,11 @@ public class ReadingTape {
         return new Record(new String(bytes).trim());
     }
 
-    private int read() {
+    private int read(boolean shouldIncrement) {
         try {
+            if (shouldIncrement) {
+                reads += 1;
+            }
             return tape.read(buffer);
         } catch (IOException e) {
             throw new RuntimeException(e);
