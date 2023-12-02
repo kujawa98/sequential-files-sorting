@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import static pl.qjavascr.util.ConstantsUtils.reads;
 import static pl.qjavascr.util.ConstantsUtils.writes;
+import static pl.qjavascr.util.SeriesUtils.howManySeries;
 
 public class Sorter {
 
@@ -19,6 +20,8 @@ public class Sorter {
     public void sort(boolean printAfterPhase) throws IOException {
         isNotSorted = true;
         int phases = 0;
+        System.out.println("Series in record file: " + howManySeries(OUTPUT));
+        long start = System.currentTimeMillis();
         while (isNotSorted) {
             //todo distribute
             ReadingTape rdt = new ReadingTape(OUTPUT, true);
@@ -48,6 +51,7 @@ public class Sorter {
         System.out.println("Writes " + writes);
         System.out.println("Reads " + reads);
         System.out.println("Both " + (reads + writes));
+        System.out.println("Sorting took " + (System.currentTimeMillis() - start) + " miliseconds");
     }
 
     public void distribute(ReadingTape readingTape,

@@ -11,6 +11,8 @@ import java.util.Scanner;
 
 import static pl.qjavascr.util.ConstantsUtils.reads;
 import static pl.qjavascr.util.ConstantsUtils.writes;
+import static pl.qjavascr.util.SeriesUtils.howManySeries;
+
 public class Main {
     private static final Sorter sorter = new Sorter();
 
@@ -23,9 +25,10 @@ public class Main {
             System.out.println("  2. Read record from keyboard");
             System.out.println("  3. Import from file");
             System.out.println("  4. Print records file");
-            System.out.println("  5. Sort");
-            System.out.println("  6. Sort with  print after each phase");
-            System.out.println("  7. Quit");
+            System.out.println("  5. Print series in record file");
+            System.out.println("  6. Sort");
+            System.out.println("  7. Sort with  print after each phase");
+            System.out.println("  8. Quit");
             System.out.println("Choose one:");
             choice = input.nextInt();
 
@@ -51,14 +54,18 @@ public class Main {
                     FilePrinter.printFileContent("src/main/resources/" + path);
                 }
                 case 5 -> {
+                    String fileName = "src/main/resources/output.dat";
+                    System.out.println("Series in record file: " + howManySeries(fileName));
+                }
+                case 6 -> {
                     System.out.println("Sorting");
                     sorter.sort(false);
                 }
-                case 6 -> {
+                case 7 -> {
                     System.out.println("Sorting with printing after every phase");
                     sorter.sort(true);
                 }
-                case 7 -> {
+                case 8 -> {
                     System.out.println("Exit");
                     running = false;
                 }
