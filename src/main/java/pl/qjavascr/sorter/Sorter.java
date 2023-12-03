@@ -35,6 +35,9 @@ public class Sorter {
             WritingTape outputTape = new WritingTape(OUTPUT);
             merge(readingTape1, readingTape2, outputTape);
             phases++;
+            if (howManySeries(OUTPUT) == 1) {
+                isNotSorted = false;
+            }
             if (printAfterPhase) {
                 System.out.println("Phase " + phases);
                 System.out.println("Output tape: ");
@@ -58,8 +61,7 @@ public class Sorter {
                            WritingTape writingTape1,
                            WritingTape writingTape2) throws IOException {
         WritingTape toSave = writingTape1;
-        Record record = readingTape.readRecord(true);
-        toSave.writeRecord(record);
+        Record record = new Record("");
 
         while (true) {
             Record newRecord;
@@ -90,30 +92,6 @@ public class Sorter {
         Record record2 = readingTape2.readRecord(true);
         Record newRecord1;
         Record newRecord2;
-
-        if (record1.data().isEmpty()) { //todo tutaj sprawdzam któryś plik jest pusty, jeśli tak to posortowane
-            do {
-                writingTape.writeRecord(record2);
-                record2 = readingTape2.readRecord(false);
-            }
-            while (!record2.data().isEmpty());
-            isNotSorted = false;
-            readingTape1.close();
-            readingTape2.close();
-            writingTape.close();
-            return;
-        } else if (record2.data().isEmpty()) {
-            do {
-                writingTape.writeRecord(record1);
-                record1 = readingTape1.readRecord(false);
-            }
-            while (!record1.data().isEmpty());
-            isNotSorted = false;
-            readingTape1.close();
-            readingTape2.close();
-            writingTape.close();
-            return;
-        }
 
         while (true) {
             if (record1.data().isEmpty()) {

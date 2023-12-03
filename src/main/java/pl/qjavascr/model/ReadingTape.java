@@ -13,6 +13,7 @@ public class ReadingTape {
     private int bufferReadIndex = 0;
     private int blockDelimiter = BUFFER_SIZE; //zakładam że rozmiar bufora jest podzielny przez rozmiar bloku
 
+
     public ReadingTape(String fileName, boolean shouldIncrement) throws IOException {
         this.tape = new DataInputStream(new FileInputStream(fileName));
         this.buffer = new byte[BUFFER_SIZE];
@@ -44,10 +45,11 @@ public class ReadingTape {
 
     private int read(boolean shouldIncrement) {
         try {
-            if (shouldIncrement) {
-                reads += 1;
+            int result = tape.read(buffer);
+            if (result == BUFFER_SIZE && shouldIncrement) {
+                reads++;
             }
-            return tape.read(buffer);
+            return result;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -56,5 +58,6 @@ public class ReadingTape {
     public void close() throws IOException {
         tape.close();
     }
+
 
 }

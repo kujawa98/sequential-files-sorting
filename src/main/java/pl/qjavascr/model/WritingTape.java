@@ -64,7 +64,6 @@ public class WritingTape {
     private void writeBuffer() {
         try {
             tape.write(buffer, 0, bufferWriteIndex);
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
