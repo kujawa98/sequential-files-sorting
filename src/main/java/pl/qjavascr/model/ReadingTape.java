@@ -46,7 +46,7 @@ public class ReadingTape {
     private int read(boolean shouldIncrement) {
         try {
             int result = tape.read(buffer);
-            if (result == BUFFER_SIZE && shouldIncrement) {
+            if (result != -1 && shouldIncrement) {
                 reads++;
             }
             return result;

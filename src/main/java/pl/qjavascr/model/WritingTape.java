@@ -30,13 +30,11 @@ public class WritingTape {
                 if (bufferWriteIndex == BUFFER_SIZE) {
                     writeBuffer();
                     bufferWriteIndex = 0;
-                    writes += 1;
+                    writes++;
                     everReachedFullBuffer = true;
                     for (int j = i + 1; j < RECORD_LEN; j++) {
                         buffer[bufferWriteIndex++] = ' ';
                     }
-                    writeBuffer();
-                    bufferWriteIndex = 0;
                 }
                 continue;
             }
@@ -44,7 +42,7 @@ public class WritingTape {
             if (bufferWriteIndex == BUFFER_SIZE) {
                 writeBuffer();
                 bufferWriteIndex = 0;
-                writes += 1;
+                writes++;
                 everReachedFullBuffer = true;
                 for (int j = i + 1; j < RECORD_LEN; j++) {
                     if (j > bytes.length - 1) {
@@ -53,8 +51,6 @@ public class WritingTape {
                     }
                     buffer[bufferWriteIndex++] = bytes[j];
                 }
-                writeBuffer();
-                bufferWriteIndex = 0;
                 return;
             }
         }
