@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static pl.qjavascr.util.ConstantsUtils.*;
+import static pl.qjavascr.util.ConstantsUtils.PAGE_SIZE;
+import static pl.qjavascr.util.ConstantsUtils.RECORDS_PER_PAGE;
+import static pl.qjavascr.util.ConstantsUtils.RECORD_LEN;
 
 public class MainDataPagedFile extends PagedFile<Record> {
+
     protected MainDataPagedFile(String fileName) throws IOException {
         super(fileName);
     }
@@ -54,7 +57,14 @@ public class MainDataPagedFile extends PagedFile<Record> {
         byte overflowRecordPosition = buffer[position++];
         boolean wasDeleted = buffer[position++] != 0;
         boolean isLastOnPage = buffer[position++] != 0;
-        return Record.builder().key(key).data(data.toString()).overflowRecordPage(overflowRecordPage).overflowRecordPosition(overflowRecordPosition).wasDeleted(wasDeleted).isLastOnPage(isLastOnPage).build();
+        return Record.builder()
+                     .key(key)
+                     .data(data.toString())
+                     .overflowRecordPage(overflowRecordPage)
+                     .overflowRecordPosition(overflowRecordPosition)
+                     .wasDeleted(wasDeleted)
+                     .isLastOnPage(isLastOnPage)
+                     .build();
     }
 
     @Override
@@ -65,6 +75,7 @@ public class MainDataPagedFile extends PagedFile<Record> {
                 return record;
             }
         }
-        return null;
+        return Record.builder().build();
     }
+
 }
