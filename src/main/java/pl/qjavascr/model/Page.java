@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 public class Page<T> {
 
-    private final int     pageNumber;
+    private final int pageNumber;
     private final List<T> data;
 
     public Page(int pageNumber, List<T> records) {

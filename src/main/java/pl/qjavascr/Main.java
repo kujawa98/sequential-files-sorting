@@ -25,3 +25,5 @@
 ////        sorter.distribute(readingTape, readingTape1, readingTape2);
 //    }
 //}
+
+//todo wstawienie -> wyszukaj najbardziej sensowny indeks w pliku indeksowym, potem wstaw do obszaru głównego, jeżeli wolne to git, jeżeli nie to bardzo niedobrze

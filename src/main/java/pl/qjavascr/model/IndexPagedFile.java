@@ -4,19 +4,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static pl.qjavascr.util.ConstantsUtils.INDEXES_PER_PAGE;
-import static pl.qjavascr.util.ConstantsUtils.INDEX_LEN;
-import static pl.qjavascr.util.ConstantsUtils.PAGE_SIZE;
-import static pl.qjavascr.util.ConstantsUtils.RECORDS_PER_PAGE;
-import static pl.qjavascr.util.ConstantsUtils.RECORD_LEN;
+import static pl.qjavascr.util.ConstantsUtils.*;
 
 public class IndexPagedFile extends PagedFile<Index> {
 
-    private final List<Integer> keys            = new ArrayList<>();
-    private       int           records         = 0;
-    private       int           mainAreaRecords = 0;
-    private       int           overflowRecords = 0;
-    private       int           deletedRecords  = 0;
+    private final List<Integer> keys = new ArrayList<>();
+    private int records = 0;
+    private int mainAreaRecords = 0;
+    private int overflowRecords = 0;
+    private int deletedRecords = 0;
 
     protected IndexPagedFile(String fileName) throws IOException {
         super(fileName);
@@ -57,9 +53,51 @@ public class IndexPagedFile extends PagedFile<Index> {
         return new Index(key, pageNumber);
     }
 
+    private byte[] tranformPageToBytes(Page<Index> page) {
+        byte[] bytes = new byte[PAGE_SIZE];
+        bytes[0] = (byte) page.getPageNumber();
+        int in = 1;
+        for (var index : page.getData()) {
+            bytes[in] = (byte) ((index.getKey() & 0xFF000000) >> 24);
+            bytes[in + 1] = (byte) ((index.getKey() & 0xFF0000) >> 16);
+            bytes[in + 2] = (byte) ((index.getKey() & 0xFF00) >> 8);
+            bytes[in + 3] = (byte) ((index.getKey() & 0xFF));
+            in += 4;
+        }
+        return bytes;
+    }
+
     @Override
     public Index readData(int pageNumber, int key) throws IOException {
-        return null;
+        return new Index(key);
+    }
+
+    @Override
+    public void insertData(Index data) throws IOException {
+        if (keys.contains(data.getKey())) {
+            System.out.println("Index already in database");
+            return;
+        }
+        keys.add(data.getKey());
+        keys.sort(Integer::compareTo);
+        byte[] buffer = new byte[PAGE_SIZE];
+        int pageNumber = 0;
+        int bufferIndex = 0;
+        fileHandle.seek(0L);
+        buffer[bufferIndex++] = (byte) pageNumber;
+        for (Integer key : keys) {
+            buffer[bufferIndex++] = (byte) ((key & 0xFF000000) >> 24);
+            buffer[bufferIndex++] = (byte) ((key & 0xFF0000) >> 16);
+            buffer[bufferIndex++] = (byte) ((key & 0xFF00) >> 8);
+            buffer[bufferIndex++] = (byte) ((key & 0xFF));
+        }
+    }
+
+    @Override
+    public void writePage(Page<Index> page) throws IOException {
+        long requestedPageNumberFilePointer = (long) (page.getPageNumber() - 1) * PAGE_SIZE;
+        fileHandle.seek(requestedPageNumberFilePointer);
+        fileHandle.write(tranformPageToBytes(page));
     }
 
 }

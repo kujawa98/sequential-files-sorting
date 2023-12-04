@@ -78,4 +78,14 @@ public class MainDataPagedFile extends PagedFile<Record> {
         return Record.builder().build();
     }
 
+    @Override
+    public void insertData(Record data) throws IOException {
+        List<Page<Record>> pages = new ArrayList<>();
+        Page<Record> page = readPage(0);
+        int pageNumber = 1;
+        while (page.getPageNumber() != -1) {
+            page.getData()
+        }
+    }
+
 }
