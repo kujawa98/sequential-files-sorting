@@ -1,14 +1,16 @@
 package pl.qjavascr.model;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 public class Page<T> {
 
-    private final int pageNumber;
+    @Setter
+    private int     pageNumber;
     private final List<T> data;
 
     public Page(int pageNumber, List<T> records) {
@@ -18,7 +20,7 @@ public class Page<T> {
 
     public Page() {
         this.pageNumber = -1;
-        this.data = Collections.emptyList();
+        this.data = new ArrayList<>();
     }
 
 }

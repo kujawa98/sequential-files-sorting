@@ -13,7 +13,7 @@ public abstract class PagedFile<T> {
     protected final byte[] buffer;
 
     protected PagedFile(String fileName) throws IOException {
-        this.fileHandle = new RandomAccessFile(fileName, "r");
+        this.fileHandle = new RandomAccessFile(fileName, "rw");
         this.buffer = new byte[BUFFER_SIZE];
         this.fileHandle.read(this.buffer);
     }

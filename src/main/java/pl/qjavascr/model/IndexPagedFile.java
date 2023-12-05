@@ -4,15 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+
 import static pl.qjavascr.util.ConstantsUtils.*;
 
+@Getter
 public class IndexPagedFile extends PagedFile<Index> {
 
     private final List<Integer> keys = new ArrayList<>();
-    private int records = 0;
-    private int mainAreaRecords = 0;
-    private int overflowRecords = 0;
-    private int deletedRecords = 0;
 
     protected IndexPagedFile(String fileName) throws IOException {
         super(fileName);
