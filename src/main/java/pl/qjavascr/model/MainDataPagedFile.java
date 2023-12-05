@@ -61,17 +61,11 @@ public class MainDataPagedFile extends PagedFile<Record> {
     @Override
     public Record readData(int pageNumber, int key) throws IOException { //pageNumber i key otrzymujemy z indeksu
         Page<Record> page = readPage(pageNumber);
-        for (Record record : page.getData()) {
-            if (record.getKey() == key) {
-                return record;
-            }
-        }
-        return Record.builder().build();
-    }
-
-    @Override
-    public void insertData(Record data) throws IOException {
-
+        return page.getData()
+                   .stream()
+                   .filter(record -> record.getKey() == key)
+                   .findFirst()
+                   .orElse(Record.builder().build());
     }
 
     @Override
@@ -103,6 +97,10 @@ public class MainDataPagedFile extends PagedFile<Record> {
     public boolean isPageFree(int pageNumber) throws IOException {
         var page = readPage(pageNumber);
         return page.getData().size() < RECORDS_PER_PAGE;
+    }
+
+    public void writeAtTheEnd(Record record) {
+
     }
 
 }

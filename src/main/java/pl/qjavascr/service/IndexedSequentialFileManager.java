@@ -12,15 +12,19 @@ public class IndexedSequentialFileManager {
 
     private final IndexPagedFile    indexPagedFile;
     private final MainDataPagedFile mainDataPagedFile;
+    private final MainDataPagedFile overfloDataPagedFile;
 
     private int records         = 0;
     private int mainAreaRecords = 0;
     private int overflowRecords = 0;
     private int deletedRecords  = 0;
 
-    public IndexedSequentialFileManager(IndexPagedFile indexPagedFile, MainDataPagedFile mainDataPagedFile) {
+    public IndexedSequentialFileManager(IndexPagedFile indexPagedFile,
+                                        MainDataPagedFile mainDataPagedFile,
+                                        MainDataPagedFile overfloDataPagedFile) {
         this.indexPagedFile = indexPagedFile;
         this.mainDataPagedFile = mainDataPagedFile;
+        this.overfloDataPagedFile = overfloDataPagedFile;
     }
 
 
@@ -39,7 +43,7 @@ public class IndexedSequentialFileManager {
                            .data(data)
                            .key(key)
                            .overflowRecordPage((byte) -1)
-                           .overflowRecordPage((byte) -1)
+                           .overflowRecordPosition((byte) -1)
                            .wasDeleted(false)
                            .build());
             page.getData().sort(Record::compareTo);
@@ -51,7 +55,7 @@ public class IndexedSequentialFileManager {
         int pageNumber = keys.size();
         for (int i = 0; i < keys.size() - 1; i++) {
             if (keys.get(i) < key && keys.get(i + 1) > key) {
-                pageNumber = i + 1;
+                pageNumber = i;
                 break;
             }
         }
@@ -79,14 +83,17 @@ public class IndexedSequentialFileManager {
             int recordNumber = 0;
             for (int i = 0; i < recordsList.size() - 1; i++) {
                 if (recordsList.get(i).getKey() < key && recordsList.get(i + 1).getKey() > key) {
-                    recordNumber = i + 1;
+                    recordNumber = i;
                     break;
                 }
             }
             var record = recordsList.get(recordNumber);
-//todo algorytm wstawienia do overflow -> jeżeli rekord w obszarze głównym gdzie powinien znaleźć sie rekord wstawiany do overflow
-//todo ma pusty wskaźnik to dodaj na końcu overflow i zaktualizuj wskaźnik
-//todo jeżeli nie jest pusty wstaw na końcu overflow i zaktualizuj wskaxnik rekordu wskazywanego w overflow przez rekord w primary area
+            while (record.getOverflowRecordPosition() != -1 && record.getOverflowRecordPage() != -1) {
+                Page<Record> pg = overfloDataPagedFile.readPage(record.getOverflowRecordPage());
+                record = pg.getData().get(record.getOverflowRecordPosition());
+            }
+            //todo tutaj wpisac nowy rekord na koniec overflowa i przestawić wskaźniki
+
             records++;
             overflowRecords++;
         }

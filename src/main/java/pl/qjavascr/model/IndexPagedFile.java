@@ -6,7 +6,9 @@ import java.util.List;
 
 import lombok.Getter;
 
-import static pl.qjavascr.util.ConstantsUtils.*;
+import static pl.qjavascr.util.ConstantsUtils.INDEXES_PER_PAGE;
+import static pl.qjavascr.util.ConstantsUtils.INDEX_LEN;
+import static pl.qjavascr.util.ConstantsUtils.PAGE_SIZE;
 
 @Getter
 public class IndexPagedFile extends PagedFile<Index> {
@@ -71,7 +73,7 @@ public class IndexPagedFile extends PagedFile<Index> {
         return new Index(key);
     }
 
-    @Override
+
     public void insertData(Index data) throws IOException {
         if (keys.contains(data.getKey())) {
             System.out.println("Index already in database");

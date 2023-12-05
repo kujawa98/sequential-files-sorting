@@ -10,7 +10,7 @@ import static pl.qjavascr.util.ConstantsUtils.BUFFER_SIZE;
 public abstract class PagedFile<T> {
 
     protected final RandomAccessFile fileHandle;
-    protected final byte[] buffer;
+    protected final byte[]           buffer;
 
     protected PagedFile(String fileName) throws IOException {
         this.fileHandle = new RandomAccessFile(fileName, "rw");
@@ -21,8 +21,6 @@ public abstract class PagedFile<T> {
     public abstract Page<T> readPage(int pageNumber) throws IOException;
 
     public abstract T readData(int pageNumber, int key) throws IOException;
-
-    public abstract void insertData(T data) throws IOException;
 
     public abstract void writePage(Page<T> page) throws IOException;
 
