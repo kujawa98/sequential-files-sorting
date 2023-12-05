@@ -10,14 +10,14 @@ import pl.qjavascr.model.Record;
 
 public class IndexedSequentialFileManager {
 
-    private final IndexPagedFile    indexPagedFile;
+    private final IndexPagedFile indexPagedFile;
     private final MainDataPagedFile mainDataPagedFile;
     private final MainDataPagedFile overfloDataPagedFile;
 
-    private int records         = 0;
+    private int records = 0;
     private int mainAreaRecords = 0;
     private int overflowRecords = 0;
-    private int deletedRecords  = 0;
+    private int deletedRecords = 0;
 
     public IndexedSequentialFileManager(IndexPagedFile indexPagedFile,
                                         MainDataPagedFile mainDataPagedFile,
@@ -39,13 +39,13 @@ public class IndexedSequentialFileManager {
             indexPagedFile.insertData(new Index(key));
             Page<Record> page = mainDataPagedFile.readPage(1);
             page.getData()
-                .add(Record.builder()
-                           .data(data)
-                           .key(key)
-                           .overflowRecordPage((byte) -1)
-                           .overflowRecordPosition((byte) -1)
-                           .wasDeleted(false)
-                           .build());
+                    .add(Record.builder()
+                            .data(data)
+                            .key(key)
+                            .overflowRecordPage((byte) -1)
+                            .overflowRecordPosition((byte) -1)
+                            .wasDeleted(false)
+                            .build());
             page.getData().sort(Record::compareTo);
             page.setPageNumber(1);
             mainDataPagedFile.writePage(page);
@@ -63,20 +63,19 @@ public class IndexedSequentialFileManager {
         if (mainDataPagedFile.isPageFree(pageNumber)) {
             Page<Record> page = mainDataPagedFile.readPage(pageNumber);
             page.getData()
-                .add(Record.builder()
-                           .data(data)
-                           .key(key)
-                           .overflowRecordPage((byte) -1)
-                           .overflowRecordPage((byte) -1)
-                           .wasDeleted(false)
-                           .build());
+                    .add(Record.builder()
+                            .data(data)
+                            .key(key)
+                            .overflowRecordPage((byte) -1)
+                            .overflowRecordPosition((byte) -1)
+                            .wasDeleted(false)
+                            .build());
             page.getData().sort(Record::compareTo);
             page.setPageNumber(pageNumber);
             mainDataPagedFile.writePage(page);
             records++;
             mainAreaRecords++;
         } else {
-            System.out.println("Jeszcze nie teraz");
             // 3. określ miejsce gdzie powinien się znaleźć nowy rekord
             Page<Record> page = mainDataPagedFile.readPage(pageNumber);
             var recordsList = page.getData();
@@ -85,7 +84,7 @@ public class IndexedSequentialFileManager {
                 if (recordsList.get(i).getKey() < key && recordsList.get(i + 1).getKey() > key) {
                     recordNumber = i;
                     break;
-                }
+                } //tutaj nie zabanglało
             }
             var record = recordsList.get(recordNumber);
             while (record.getOverflowRecordPosition() != -1 && record.getOverflowRecordPage() != -1) {
@@ -93,9 +92,12 @@ public class IndexedSequentialFileManager {
                 record = pg.getData().get(record.getOverflowRecordPosition());
             }
             //todo tutaj wpisac nowy rekord na koniec overflowa i przestawić wskaźniki
-
+            var pair = overfloDataPagedFile.writeAtTheEnd(Record.builder().data(data).key(key).overflowRecordPage((byte) -1).overflowRecordPosition((byte) -1).wasDeleted(false).isLastOnPage(false).build());
+            record.setOverflowRecordPage(pair.getLeft().byteValue());
+            record.setOverflowRecordPosition(pair.getRight().byteValue());
             records++;
             overflowRecords++;
+            mainDataPagedFile.writePage(page);
         }
     }
 
