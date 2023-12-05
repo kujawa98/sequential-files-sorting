@@ -84,8 +84,13 @@ public class MainDataPagedFile extends PagedFile<Record> {
         Page<Record> page = readPage(0);
         int pageNumber = 1;
         while (page.getPageNumber() != -1) {
-            page.getData()
+            page.getData();
         }
+    }
+
+    @Override
+    public void writePage(Page<Record> page) throws IOException {
+
     }
 
 }
