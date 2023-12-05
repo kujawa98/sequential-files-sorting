@@ -50,7 +50,7 @@ public class IndexPagedFile extends PagedFile<Index> {
         int key = (buffer[position] << 24) | (buffer[position + 1] << 16) | (buffer[position + 2] << 8) | (buffer[position + 3]);
         position += 4;
         int pageNumber = (buffer[position] << 24) | (buffer[position + 1] << 16) | (buffer[position + 2] << 8) | (buffer[position + 3]);
-        return new Index(key, pageNumber);
+        return new Index(key);
     }
 
     private byte[] tranformPageToBytes(Page<Index> page) {
@@ -90,6 +90,10 @@ public class IndexPagedFile extends PagedFile<Index> {
             buffer[bufferIndex++] = (byte) ((key & 0xFF0000) >> 16);
             buffer[bufferIndex++] = (byte) ((key & 0xFF00) >> 8);
             buffer[bufferIndex++] = (byte) ((key & 0xFF));
+            if (bufferIndex == PAGE_SIZE){
+                pageNumber++;
+
+            }
         }
     }
 
