@@ -58,13 +58,13 @@ public class MainDataPagedFile extends PagedFile<Record> {
         boolean wasDeleted = buffer[position++] != 0;
         boolean isLastOnPage = buffer[position++] != 0;
         return Record.builder()
-                     .key(key)
-                     .data(data.toString())
-                     .overflowRecordPage(overflowRecordPage)
-                     .overflowRecordPosition(overflowRecordPosition)
-                     .wasDeleted(wasDeleted)
-                     .isLastOnPage(isLastOnPage)
-                     .build();
+                .key(key)
+                .data(data.toString())
+                .overflowRecordPage(overflowRecordPage)
+                .overflowRecordPosition(overflowRecordPosition)
+                .wasDeleted(wasDeleted)
+                .isLastOnPage(isLastOnPage)
+                .build();
     }
 
     @Override

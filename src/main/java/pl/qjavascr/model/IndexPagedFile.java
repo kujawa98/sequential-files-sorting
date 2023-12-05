@@ -90,9 +90,8 @@ public class IndexPagedFile extends PagedFile<Index> {
             buffer[bufferIndex++] = (byte) ((key & 0xFF0000) >> 16);
             buffer[bufferIndex++] = (byte) ((key & 0xFF00) >> 8);
             buffer[bufferIndex++] = (byte) ((key & 0xFF));
-            if (bufferIndex == PAGE_SIZE){
+            if (bufferIndex == PAGE_SIZE) {
                 pageNumber++;
-
             }
         }
     }
