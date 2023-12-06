@@ -10,14 +10,14 @@ import pl.qjavascr.model.Record;
 
 public class IndexedSequentialFileManager {
 
-    private final IndexPagedFile indexPagedFile;
+    private final IndexPagedFile    indexPagedFile;
     private final MainDataPagedFile mainDataPagedFile;
     private final MainDataPagedFile overfloDataPagedFile;
 
-    private int records = 0;
+    private int records         = 0;
     private int mainAreaRecords = 0;
     private int overflowRecords = 0;
-    private int deletedRecords = 0;
+    private int deletedRecords  = 0;
 
     public IndexedSequentialFileManager(IndexPagedFile indexPagedFile,
                                         MainDataPagedFile mainDataPagedFile,
@@ -39,13 +39,13 @@ public class IndexedSequentialFileManager {
             indexPagedFile.insertData(new Index(key));
             Page<Record> page = mainDataPagedFile.readPage(1);
             page.getData()
-                    .add(Record.builder()
-                            .data(data)
-                            .key(key)
-                            .overflowRecordPage((byte) -1)
-                            .overflowRecordPosition((byte) -1)
-                            .wasDeleted(false)
-                            .build());
+                .add(Record.builder()
+                           .data(data)
+                           .key(key)
+                           .overflowRecordPage((byte) -1)
+                           .overflowRecordPosition((byte) -1)
+                           .wasDeleted(false)
+                           .build());
             page.getData().sort(Record::compareTo);
             page.setPageNumber(1);
             mainDataPagedFile.writePage(page);
@@ -54,8 +54,11 @@ public class IndexedSequentialFileManager {
         }
         int pageNumber = keys.size();
         for (int i = 0; i < keys.size() - 1; i++) {
-            if (keys.get(i) < key && keys.get(i + 1) > key) {
+            if ((keys.get(i) < key && keys.get(i + 1) > key)) {
                 pageNumber = i;
+                break;
+            } else if (i + 1 == keys.size() - 1) {
+                pageNumber = i + 1;
                 break;
             }
         }
@@ -63,13 +66,13 @@ public class IndexedSequentialFileManager {
         if (mainDataPagedFile.isPageFree(pageNumber)) {
             Page<Record> page = mainDataPagedFile.readPage(pageNumber);
             page.getData()
-                    .add(Record.builder()
-                            .data(data)
-                            .key(key)
-                            .overflowRecordPage((byte) -1)
-                            .overflowRecordPosition((byte) -1)
-                            .wasDeleted(false)
-                            .build());
+                .add(Record.builder()
+                           .data(data)
+                           .key(key)
+                           .overflowRecordPage((byte) -1)
+                           .overflowRecordPosition((byte) -1)
+                           .wasDeleted(false)
+                           .build());
             page.getData().sort(Record::compareTo);
             page.setPageNumber(pageNumber);
             mainDataPagedFile.writePage(page);
@@ -81,23 +84,58 @@ public class IndexedSequentialFileManager {
             var recordsList = page.getData();
             int recordNumber = 0;
             for (int i = 0; i < recordsList.size() - 1; i++) {
-                if (recordsList.get(i).getKey() < key && recordsList.get(i + 1).getKey() > key) {
+                if ((recordsList.get(i).getKey() < key && recordsList.get(i + 1).getKey() > key)) {
                     recordNumber = i;
                     break;
-                } //tutaj nie zabanglało
+                } else if (i + 1 == recordsList.size() - 1) {
+                    recordNumber = i + 1;
+                    break;
+                }
             }
             var record = recordsList.get(recordNumber);
+            boolean toOverflow = false;
+            Page<Record> pg = new Page<>();
             while (record.getOverflowRecordPosition() != -1 && record.getOverflowRecordPage() != -1) {
-                Page<Record> pg = overfloDataPagedFile.readPage(record.getOverflowRecordPage());
+                pg = overfloDataPagedFile.readPage(record.getOverflowRecordPage());
                 record = pg.getData().get(record.getOverflowRecordPosition());
+                toOverflow = true; // todo sprawdzać czy rekord obecny ma większy klucz niż nowy, jeśli tak to je zamień
+                if (record.getKey() > key) {
+                    String temp = data;
+                    data = record.getData();
+                    record.setData(temp);
+
+                    int tempK = key;
+                    key = record.getKey();
+                    record.setKey(tempK);
+
+                    overfloDataPagedFile.writePage(pg);
+                }
             }
             //todo tutaj wpisac nowy rekord na koniec overflowa i przestawić wskaźniki
-            var pair = overfloDataPagedFile.writeAtTheEnd(Record.builder().data(data).key(key).overflowRecordPage((byte) -1).overflowRecordPosition((byte) -1).wasDeleted(false).isLastOnPage(false).build());
-            record.setOverflowRecordPage(pair.getLeft().byteValue());
-            record.setOverflowRecordPosition(pair.getRight().byteValue());
+            var pair = overfloDataPagedFile.writeAtTheEnd(Record.builder()
+                                                                .data(data)
+                                                                .key(key)
+                                                                .overflowRecordPage((byte) -1)
+                                                                .overflowRecordPosition((byte) -1)
+                                                                .wasDeleted(false)
+                                                                .isLastOnPage(false)
+                                                                .build());
             records++;
             overflowRecords++;
-            mainDataPagedFile.writePage(page);
+
+            if (toOverflow) {
+                pg = overfloDataPagedFile.readPage(pg.getPageNumber());
+                Record finalRecord = record;
+                var r = pg.getData().stream().filter(record1 -> record1.getKey() == finalRecord.getKey()).findFirst().get();
+                r.setOverflowRecordPage(pair.getLeft().byteValue());
+                r.setOverflowRecordPosition(pair.getRight().byteValue());
+                overfloDataPagedFile.writePage(pg);
+            } else {
+                record.setOverflowRecordPage(pair.getLeft().byteValue());
+                record.setOverflowRecordPosition(pair.getRight().byteValue());
+                mainDataPagedFile.writePage(page);
+            }
+//todo a jakby po posortowaniu obszaru nadmiarowego "prześledzać" drogę kazdego rekordu i odpowiednio ustawiać wskaźniki?
         }
     }
 
@@ -113,7 +151,7 @@ public class IndexedSequentialFileManager {
 
     }
 
-    public void updateRecord(int key, String data) {
+    public void updateRecord(int key, String data) throws IOException {
 
     }
 
