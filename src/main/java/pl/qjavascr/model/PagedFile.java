@@ -26,10 +26,11 @@ public abstract class PagedFile<T> {
 
     public List<Page<T>> readWholeFile() throws IOException {
         List<Page<T>> pages = new ArrayList<>();
-        Page<T> page = readPage(0);
+        Page<T> page = readPage(1);
         int pageNumber = 1;
         while (page.getPageNumber() != -1) {
             pages.add(page);
+            pageNumber++;
             page = readPage(pageNumber);
         }
         return pages;

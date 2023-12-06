@@ -50,8 +50,11 @@ public class IndexedSequentialFileManager {
             page.setPageNumber(1);
             mainDataPagedFile.writePage(page);
             records++;
+            mainAreaRecords++;
             return;
         }
+
+        //do której strony powinienem zapisać
         int pageNumber = keys.size();
         for (int i = 0; i < keys.size() - 1; i++) {
             if ((keys.get(i) < key && keys.get(i + 1) > key)) {
@@ -62,6 +65,7 @@ public class IndexedSequentialFileManager {
                 break;
             }
         }
+
         // 2. jeżeli strona w głównym obszarze danych jest wolna to zapisz, jeżeli nie to zapisz do obszaru nadmiarowego
         if (mainDataPagedFile.isPageFree(pageNumber)) {
             Page<Record> page = mainDataPagedFile.readPage(pageNumber);
@@ -92,6 +96,8 @@ public class IndexedSequentialFileManager {
                     break;
                 }
             }
+
+            //idziemy z chainem do pierwszego bez wskaźnikowego elementu
             var record = recordsList.get(recordNumber);
             boolean toOverflow = false;
             Page<Record> pg = new Page<>();
@@ -122,11 +128,14 @@ public class IndexedSequentialFileManager {
                                                                 .build());
             records++;
             overflowRecords++;
-
             if (toOverflow) {
                 pg = overfloDataPagedFile.readPage(pg.getPageNumber());
                 Record finalRecord = record;
-                var r = pg.getData().stream().filter(record1 -> record1.getKey() == finalRecord.getKey()).findFirst().get();
+                var r = pg.getData()
+                          .stream()
+                          .filter(record1 -> record1.getKey() == finalRecord.getKey())
+                          .findFirst()
+                          .get();
                 r.setOverflowRecordPage(pair.getLeft().byteValue());
                 r.setOverflowRecordPosition(pair.getRight().byteValue());
                 overfloDataPagedFile.writePage(pg);
@@ -135,7 +144,7 @@ public class IndexedSequentialFileManager {
                 record.setOverflowRecordPosition(pair.getRight().byteValue());
                 mainDataPagedFile.writePage(page);
             }
-//todo a jakby po posortowaniu obszaru nadmiarowego "prześledzać" drogę kazdego rekordu i odpowiednio ustawiać wskaźniki?
+            //todo a jakby po posortowaniu obszaru nadmiarowego "prześledzać" drogę kazdego rekordu i odpowiednio ustawiać wskaźniki?
         }
     }
 
@@ -143,12 +152,14 @@ public class IndexedSequentialFileManager {
 
     }
 
-    public void readIndexFile() {
-
+    public void readIndexFile() throws IOException {
+        var i = indexPagedFile.readWholeFile();
+        System.out.println(i);
     }
 
-    public void readDataFile(boolean mainOnly) {
-
+    public void readDataFile(boolean mainOnly) throws IOException {
+        var s = mainDataPagedFile.readWholeFile();
+        System.out.println(s);
     }
 
     public void updateRecord(int key, String data) throws IOException {

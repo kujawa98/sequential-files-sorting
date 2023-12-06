@@ -108,7 +108,6 @@ public class MainDataPagedFile extends PagedFile<Record> {
         if (isPageFree(pageNumber)) {
             Page<Record> page = readPage(pageNumber);
             page.getData().add(record);
-            page.getData().sort(Record::compareTo);
             page.setPageNumber(pageNumber);
             writePage(page);
             return Pair.of(pageNumber, page.getData().indexOf(record));

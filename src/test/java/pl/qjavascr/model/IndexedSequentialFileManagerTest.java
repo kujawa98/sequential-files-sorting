@@ -34,7 +34,11 @@ public class IndexedSequentialFileManagerTest {
         indexedSequentialFileManager.addRecord(2, "qwertyuiopqwertyuiopqwertyuiop");
         indexedSequentialFileManager.addRecord(7, "abcdefghijklmnoprstuwyqvxzabcd");
         indexedSequentialFileManager.addRecord(21, "abcdefghijklmnoprstuwyqvxzabcd");
-//        indexedSequentialFileManager.addRecord(25, "abcdefghijklmnoprstuwyqvxzabcd");
     }
 
+    @Test
+    void testReadWholeFile() throws IOException {
+        indexedSequentialFileManager.readDataFile(true);
+        indexedSequentialFileManager.readIndexFile();
+    }
 }
