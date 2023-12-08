@@ -3,6 +3,8 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+src/main/resources
+
 ### IntelliJ IDEA ###
 .idea/modules.xml
 .idea/jarRepositories.xml
@@ -37,5 +39,3 @@ build/
 
 ### Mac OS ###
 .DS_Store
-
-src\resources\*.dat
