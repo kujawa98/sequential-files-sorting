@@ -38,4 +38,6 @@ build/
 ### Mac OS ###
 .DS_Store
 
-src\resources\*.dat
+!**/src/main/resources/**
+!**/src/test/resources/**
+src/main/resources/application.properties
