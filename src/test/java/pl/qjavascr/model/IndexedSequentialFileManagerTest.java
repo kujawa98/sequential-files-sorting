@@ -64,4 +64,19 @@ public class IndexedSequentialFileManagerTest {
         indexedSequentialFileManager.readRecord(7);
         indexedSequentialFileManager.readRecord(21);
     }
+
+    @Test
+    void testReorganize() throws IOException {
+        indexedSequentialFileManager.addRecord(0, "qwertyuiopqwertyuiopqwertyuiop");
+        indexedSequentialFileManager.addRecord(4, "qwertyuiopqwertyuiopqwertyuiop");
+        indexedSequentialFileManager.addRecord(5, "qwertyuiopqwertyuiopqwertyuiop");
+        indexedSequentialFileManager.addRecord(8, "qwertyuiopqwertyuiopqwertyuiop");
+
+        indexedSequentialFileManager.addRecord(3, "qwertyuiopqwertyuiopqwertyuiop");
+        indexedSequentialFileManager.addRecord(9, "qwertyuiopqwertyuiopqwertyuiop");
+        indexedSequentialFileManager.addRecord(2, "qwertyuiopqwertyuiopqwertyuiop");
+        indexedSequentialFileManager.addRecord(7, "abcdefghijklmnoprstuwyqvxzabcd");
+
+        indexedSequentialFileManager.reorganize();
+    }
 }

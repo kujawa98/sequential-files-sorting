@@ -12,7 +12,7 @@ import static pl.qjavascr.util.ConstantsUtils.RECORD_LEN;
 
 public class MainDataPagedFile extends PagedFile<Record> {
 
-    protected MainDataPagedFile(String fileName) throws IOException {
+    public MainDataPagedFile(String fileName) throws IOException {
         super(fileName);
     }
 

@@ -15,7 +15,7 @@ public class IndexPagedFile extends PagedFile<Index> {
 
     private final List<Integer> keys = new ArrayList<>();
 
-    protected IndexPagedFile(String fileName) throws IOException {
+    public IndexPagedFile(String fileName) throws IOException {
         super(fileName);
     }
 
@@ -104,4 +104,7 @@ public class IndexPagedFile extends PagedFile<Index> {
         fileHandle.write(tranformPageToBytes(page));
     }
 
+    public boolean containsKey(int key){
+        return keys.contains(key);
+    }
 }

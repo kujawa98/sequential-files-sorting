@@ -1,7 +1,10 @@
 package pl.qjavascr.model;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +13,7 @@ import static pl.qjavascr.util.ConstantsUtils.BUFFER_SIZE;
 public abstract class PagedFile<T> {
 
     protected final RandomAccessFile fileHandle;
-    protected final byte[]           buffer;
+    protected final byte[] buffer;
 
     protected PagedFile(String fileName) throws IOException {
         this.fileHandle = new RandomAccessFile(fileName, "rw");
@@ -36,5 +39,11 @@ public abstract class PagedFile<T> {
         return pages;
     }
 
+    public void copy(String source) throws IOException {
+        try (FileChannel src = new FileInputStream(source).getChannel()) {
+            FileChannel thisChannel = fileHandle.getChannel();
+            thisChannel.transferFrom(src, 0, src.size());
+        }
+    }
 
 }
