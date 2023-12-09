@@ -212,7 +212,9 @@ public class IndexedSequentialFileManager {
     }
 
     public void reorganize() {
-
+        //todo algorytm reorganizacji pliku indeksowo-sekwencyjnego
+        //todo wiadomo ile będzie rekordów a co za tym idzie wiadomo ile będzie stron
+        //todo
     }
 
 
