@@ -1,9 +1,6 @@
 package pl.qjavascr.service;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.util.List;
 
 import pl.qjavascr.model.Index;
@@ -11,8 +8,6 @@ import pl.qjavascr.model.IndexPagedFile;
 import pl.qjavascr.model.MainDataPagedFile;
 import pl.qjavascr.model.Page;
 import pl.qjavascr.model.Record;
-
-import static pl.qjavascr.util.ConstantsUtils.RECORDS_PER_PAGE;
 
 public class IndexedSequentialFileManager {
 
@@ -213,8 +208,55 @@ public class IndexedSequentialFileManager {
 
     }
 
-    public void deleteRecord(int key) {
+    public void deleteRecord(int key) throws IOException {
+        //wyszukaj stronę gdzie powinien być rekord, jeśli nie to idziesz za wskaźnikiem
+        var keys = indexPagedFile.getKeys();
+        int pageNumber = keys.size();
+        for (int i = 0; i < keys.size() - 1; i++) {
+            if ((keys.get(i) < key && keys.get(i + 1) > key)) {
+                pageNumber = i;
+                break;
+            } else if (i + 1 == keys.size() - 1) {
+                pageNumber = i + 1;
+                break;
+            }
+        }
+        var page = mainDataPagedFile.readPage(pageNumber);
+        for (int i = 0; i < page.getData().size(); i++) {
+            if (page.getData().get(i).getKey() == key) {
+                page.getData().get(i).setWasDeleted(true);
+                mainDataPagedFile.writePage(page);
+                return;
+            }
+        }
+        //podążaj za wskaźnikiem
+        var recordsList = page.getData();
+        int recordNumber = 0;
+        for (int i = 0; i < recordsList.size() - 1; i++) {
+            if ((recordsList.get(i).getKey() < key && recordsList.get(i + 1).getKey() > key)) {
+                recordNumber = i;
+                break;
+            } else if (i + 1 == recordsList.size() - 1) {
+                recordNumber = i + 1;
+                break;
+            }
+        }
+        var record = page.getData().get(recordNumber);
+        do {
+            if (record.getKey() == key) {
+                record.setWasDeleted(true);
+                mainDataPagedFile.writePage(page);
+                return;
+            }
+            record = overfloDataPagedFile.readPage(record.getOverflowRecordPage()).getData().get(record.getOverflowRecordPosition());
+            if (record.getKey() == key) {
+                record.setWasDeleted(true);
+                mainDataPagedFile.writePage(page);
+                return;
+            }
+        } while (record.getOverflowRecordPosition() != -1 && record.getOverflowRecordPage() != -1);
 
+        System.out.println("Nie ma rekordu z kluczem " + key);
     }
 
     public void reorganize() throws IOException {
@@ -230,18 +272,22 @@ public class IndexedSequentialFileManager {
 
         while (page.getPageNumber() != -1) {
             for (Record rec : records) {
-                var coords = newMainDataPagedFile.writeAtTheEnd(Record.builder().key(rec.getKey()).data(rec.data()).wasDeleted(false).isLastOnPage(false).overflowRecordPosition((byte) -1).overflowRecordPage((byte) -1).build());
-                if (currentWritePage != coords.getLeft()) {
-                    newIndexPagedFile.insertData(new Index(rec.getKey()));
-                    currentWritePage++;
+                if (!rec.isWasDeleted()) {
+                    var coords = newMainDataPagedFile.writeAtTheEnd(Record.builder().key(rec.getKey()).data(rec.data()).wasDeleted(false).isLastOnPage(false).overflowRecordPosition((byte) -1).overflowRecordPage((byte) -1).build());
+                    if (currentWritePage != coords.getLeft()) {
+                        newIndexPagedFile.insertData(new Index(rec.getKey()));
+                        currentWritePage++;
+                    }
                 }
                 Record temp = rec;
                 while (temp.getOverflowRecordPosition() != -1 && temp.getOverflowRecordPage() != -1) {
                     temp = overfloDataPagedFile.readPage(temp.getOverflowRecordPage()).getData().get(temp.getOverflowRecordPosition());
-                    coords = newMainDataPagedFile.writeAtTheEnd(Record.builder().key(temp.getKey()).data(temp.data()).wasDeleted(false).isLastOnPage(false).overflowRecordPosition((byte) -1).overflowRecordPage((byte) -1).build());
-                    if (currentWritePage != coords.getLeft()) {
-                        newIndexPagedFile.insertData(new Index(temp.getKey()));
-                        currentWritePage++;
+                    if (!temp.isWasDeleted()) {
+                        var coords = newMainDataPagedFile.writeAtTheEnd(Record.builder().key(temp.getKey()).data(temp.data()).wasDeleted(false).isLastOnPage(false).overflowRecordPosition((byte) -1).overflowRecordPage((byte) -1).build());
+                        if (currentWritePage != coords.getLeft()) {
+                            newIndexPagedFile.insertData(new Index(temp.getKey()));
+                            currentWritePage++;
+                        }
                     }
                 }
             }
