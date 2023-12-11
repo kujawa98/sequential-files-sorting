@@ -205,7 +205,54 @@ public class IndexedSequentialFileManager {
     }
 
     public void updateRecord(int key, String data) throws IOException {
+        //wyszukaj stronę gdzie powinien być rekord, jeśli nie to idziesz za wskaźnikiem
+        var keys = indexPagedFile.getKeys();
+        int pageNumber = keys.size();
+        for (int i = 0; i < keys.size() - 1; i++) {
+            if ((keys.get(i) < key && keys.get(i + 1) > key)) {
+                pageNumber = i;
+                break;
+            } else if (i + 1 == keys.size() - 1) {
+                pageNumber = i + 1;
+                break;
+            }
+        }
+        var page = mainDataPagedFile.readPage(pageNumber);
+        for (int i = 0; i < page.getData().size(); i++) {
+            if (page.getData().get(i).getKey() == key) {
+                page.getData().get(i).setData(data);
+                mainDataPagedFile.writePage(page);
+                return;
+            }
+        }
+        //podążaj za wskaźnikiem
+        var recordsList = page.getData();
+        int recordNumber = 0;
+        for (int i = 0; i < recordsList.size() - 1; i++) {
+            if ((recordsList.get(i).getKey() < key && recordsList.get(i + 1).getKey() > key)) {
+                recordNumber = i;
+                break;
+            } else if (i + 1 == recordsList.size() - 1) {
+                recordNumber = i + 1;
+                break;
+            }
+        }
+        var record = page.getData().get(recordNumber);
+        do {
+            if (record.getKey() == key) {
+                record.setData(data);
+                mainDataPagedFile.writePage(page);
+                return;
+            }
+            record = overfloDataPagedFile.readPage(record.getOverflowRecordPage()).getData().get(record.getOverflowRecordPosition());
+            if (record.getKey() == key) {
+                record.setData(data);
+                mainDataPagedFile.writePage(page);
+                return;
+            }
+        } while (record.getOverflowRecordPosition() != -1 && record.getOverflowRecordPage() != -1);
 
+        System.out.println("Nie ma rekordu z kluczem " + key);
     }
 
     public void deleteRecord(int key) throws IOException {
