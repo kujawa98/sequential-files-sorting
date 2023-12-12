@@ -1,6 +1,7 @@
 package pl.qjavascr.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import pl.qjavascr.model.Index;
@@ -8,6 +9,9 @@ import pl.qjavascr.model.IndexPagedFile;
 import pl.qjavascr.model.MainDataPagedFile;
 import pl.qjavascr.model.Page;
 import pl.qjavascr.model.Record;
+
+import static pl.qjavascr.util.ConstantsUtils.ALPHA;
+import static pl.qjavascr.util.ConstantsUtils.RECORDS_PER_PAGE;
 
 public class IndexedSequentialFileManager {
 
@@ -309,6 +313,7 @@ public class IndexedSequentialFileManager {
     public void reorganize() throws IOException {
         //todo algorytm reorganizacji pliku indeksowo-sekwencyjnego
         //todo wiadomo ile będzie rekordów a co za tym idzie wiadomo ile będzie stron
+        //todo wypełniam stronę i zapisuję - przez sekwencje mam gwarancje ze bedzie git
         MainDataPagedFile newMainDataPagedFile = new MainDataPagedFile("src/test/resources/newMain.dat");
         IndexPagedFile newIndexPagedFile = new IndexPagedFile("src/test/resources/newIndex.idx");
 
@@ -316,31 +321,42 @@ public class IndexedSequentialFileManager {
         List<Record> records = page.getData();
         int currentWritePage = 1;
         int currentReadPage = 1;
+        double alpha = ALPHA * RECORDS_PER_PAGE;
+        int recordsWritten = 0;
+        List<Record> newRecords = new ArrayList<>(); //to wypełniamymy
 
         while (page.getPageNumber() != -1) {
-            for (Record rec : records) {
-                if (!rec.isWasDeleted()) {
-                    var coords = newMainDataPagedFile.writeAtTheEnd(Record.builder().key(rec.getKey()).data(rec.data()).wasDeleted(false).isLastOnPage(false).overflowRecordPosition((byte) -1).overflowRecordPage((byte) -1).build());
-                    if (currentWritePage != coords.getLeft()) {
-                        newIndexPagedFile.insertData(new Index(rec.getKey()));
-                        currentWritePage++;
-                    }
+
+            for (Record rec : records) { //dla każdego rekordu ze strony w obszarze głównym
+
+                if (!rec.isWasDeleted()) { //jeżeli nie jest do usunięcia
+                    newRecords.add(Record.builder().key(rec.getKey()).data(rec.data()).wasDeleted(false).isLastOnPage(false).overflowRecordPosition((byte) -1).overflowRecordPage((byte) -1).build());
+                    recordsWritten++;
                 }
+
+                //podążamy za wskaźnikami
                 Record temp = rec;
                 while (temp.getOverflowRecordPosition() != -1 && temp.getOverflowRecordPage() != -1) {
                     temp = overfloDataPagedFile.readPage(temp.getOverflowRecordPage()).getData().get(temp.getOverflowRecordPosition());
                     if (!temp.isWasDeleted()) {
-                        var coords = newMainDataPagedFile.writeAtTheEnd(Record.builder().key(temp.getKey()).data(temp.data()).wasDeleted(false).isLastOnPage(false).overflowRecordPosition((byte) -1).overflowRecordPage((byte) -1).build());
-                        if (currentWritePage != coords.getLeft()) {
-                            newIndexPagedFile.insertData(new Index(temp.getKey()));
-                            currentWritePage++;
-                        }
+                        newRecords.add(Record.builder().key(temp.getKey()).data(temp.data()).wasDeleted(false).isLastOnPage(false).overflowRecordPosition((byte) -1).overflowRecordPage((byte) -1).build());
+                        recordsWritten++;
                     }
+                }
+
+                if (recordsWritten == alpha) { //jeżeli wypełniliśmy alfa rekordów na stronie
+                    recordsWritten = 0;
+                    newIndexPagedFile.insertData(new Index(newRecords.getFirst().getKey()));
+                    Page<Record> newPage = new Page<>(currentWritePage++, newRecords);
+                    newMainDataPagedFile.writePage(newPage);
+                    newRecords = new ArrayList<>();
                 }
             }
             page = mainDataPagedFile.readPage(++currentReadPage);
             records = page.getData();
         }
+
+
         overflowRecords = 0;
         mainAreaRecords = this.records;
     }

@@ -7,10 +7,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
+@Setter
 public class Page<T> {
 
-    @Setter
-    private int     pageNumber;
+    private int pageNumber;
     private final List<T> data;
 
     public Page(int pageNumber, List<T> records) {
