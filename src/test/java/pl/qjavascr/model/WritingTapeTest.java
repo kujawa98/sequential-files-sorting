@@ -14,13 +14,4 @@ public class WritingTapeTest {
         System.out.println(page);
     }
 
-    @Test
-    void testReadRecord() throws IOException {
-        MainDataPagedFile readingTape = new MainDataPagedFile("src/test/resources/writing.dat");
-        Record r;
-        for (int i = 0; i < 4; i++) {
-            r = readingTape.readData(i + 1, 2137 + i);
-            System.out.println(r);
-        }
-    }
 }

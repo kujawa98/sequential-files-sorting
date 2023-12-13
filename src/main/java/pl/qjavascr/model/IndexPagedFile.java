@@ -68,10 +68,6 @@ public class IndexPagedFile extends PagedFile<Index> {
         return bytes;
     }
 
-    @Override
-    public Index readData(int pageNumber, int key) throws IOException {
-        return new Index(key);
-    }
 
 
     public void insertData(Index data) throws IOException {
@@ -102,6 +98,11 @@ public class IndexPagedFile extends PagedFile<Index> {
         long requestedPageNumberFilePointer = (long) (page.getPageNumber() - 1) * PAGE_SIZE;
         fileHandle.seek(requestedPageNumberFilePointer);
         fileHandle.write(tranformPageToBytes(page));
+    }
+
+    @Override
+    public void close() throws IOException {
+
     }
 
     public boolean containsKey(int key){

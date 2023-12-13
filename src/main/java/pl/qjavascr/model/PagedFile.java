@@ -18,12 +18,9 @@ public abstract class PagedFile<T> {
     protected PagedFile(String fileName) throws IOException {
         this.fileHandle = new RandomAccessFile(fileName, "rw");
         this.buffer = new byte[BUFFER_SIZE];
-        this.fileHandle.read(this.buffer);
     }
 
     public abstract Page<T> readPage(int pageNumber) throws IOException;
-
-    public abstract T readData(int pageNumber, int key) throws IOException;
 
     public abstract void writePage(Page<T> page) throws IOException;
 
@@ -45,5 +42,7 @@ public abstract class PagedFile<T> {
             thisChannel.transferFrom(src, 0, src.size());
         }
     }
+
+    public abstract void close() throws IOException;
 
 }

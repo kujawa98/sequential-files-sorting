@@ -11,15 +11,17 @@ public class IndexedSequentialFileManagerTest {
 
     IndexedSequentialFileManager indexedSequentialFileManager;
     MainDataPagedFile mainDataPagedFile;
+    MainDataPagedFile overflow;
 
     @BeforeEach
     void setUp() throws IOException {
         mainDataPagedFile = new MainDataPagedFile("src/test/resources/writing.dat");
+        overflow = new MainDataPagedFile(
+                "src/test/resources/overflow.dat");
         indexedSequentialFileManager = new IndexedSequentialFileManager(new IndexPagedFile(
                 "src/test/resources/index.idx"),
-                mainDataPagedFile,
-                new MainDataPagedFile(
-                        "src/test/resources/overflow.dat"));
+                mainDataPagedFile, overflow
+        );
     }
 
     @Test
@@ -34,6 +36,9 @@ public class IndexedSequentialFileManagerTest {
         indexedSequentialFileManager.addRecord(2, "qwertyuiopqwertyuiopqwertyuiop");
         indexedSequentialFileManager.addRecord(7, "abcdefghijklmnoprstuwyqvxzabcd");
         indexedSequentialFileManager.addRecord(21, "abcdefghijklmnoprstuwyqvxzabcd");
+
+        mainDataPagedFile.close();
+        overflow.close();
     }
 
     @Test
@@ -72,10 +77,10 @@ public class IndexedSequentialFileManagerTest {
         indexedSequentialFileManager.addRecord(5, "qwertyuiopqwertyuiopqwertyuiop");
         indexedSequentialFileManager.addRecord(8, "qwertyuiopqwertyuiopqwertyuiop");
 
-//        indexedSequentialFileManager.addRecord(3, "qwertyuiopqwertyuiopqwertyuiop");
-//        indexedSequentialFileManager.addRecord(9, "qwertyuiopqwertyuiopqwertyuiop");
-//        indexedSequentialFileManager.addRecord(2, "qwertyuiopqwertyuiopqwertyuiop");
-//        indexedSequentialFileManager.addRecord(7, "abcdefghijklmnoprstuwyqvxzabcd");
+        indexedSequentialFileManager.addRecord(3, "qwertyuiopqwertyuiopqwertyuiop");
+        indexedSequentialFileManager.addRecord(9, "qwertyuiopqwertyuiopqwertyuiop");
+        indexedSequentialFileManager.addRecord(2, "qwertyuiopqwertyuiopqwertyuiop");
+        indexedSequentialFileManager.addRecord(7, "abcdefghijklmnoprstuwyqvxzabcd");
 
         indexedSequentialFileManager.reorganize();
     }

@@ -334,6 +334,14 @@ public class IndexedSequentialFileManager {
                     recordsWritten++;
                 }
 
+                if (recordsWritten == alpha) { //jeżeli wypełniliśmy alfa rekordów na stronie
+                    recordsWritten = 0;
+                    newIndexPagedFile.insertData(new Index(newRecords.getFirst().getKey()));
+                    Page<Record> newPage = new Page<>(currentWritePage++, newRecords);
+                    newMainDataPagedFile.writePage(newPage);
+                    newRecords = new ArrayList<>();
+                }
+
                 //podążamy za wskaźnikami
                 Record temp = rec;
                 while (temp.getOverflowRecordPosition() != -1 && temp.getOverflowRecordPage() != -1) {
@@ -342,14 +350,13 @@ public class IndexedSequentialFileManager {
                         newRecords.add(Record.builder().key(temp.getKey()).data(temp.data()).wasDeleted(false).isLastOnPage(false).overflowRecordPosition((byte) -1).overflowRecordPage((byte) -1).build());
                         recordsWritten++;
                     }
-                }
-
-                if (recordsWritten == alpha) { //jeżeli wypełniliśmy alfa rekordów na stronie
-                    recordsWritten = 0;
-                    newIndexPagedFile.insertData(new Index(newRecords.getFirst().getKey()));
-                    Page<Record> newPage = new Page<>(currentWritePage++, newRecords);
-                    newMainDataPagedFile.writePage(newPage);
-                    newRecords = new ArrayList<>();
+                    if (recordsWritten == alpha) { //jeżeli wypełniliśmy alfa rekordów na stronie
+                        recordsWritten = 0;
+                        newIndexPagedFile.insertData(new Index(newRecords.getFirst().getKey()));
+                        Page<Record> newPage = new Page<>(currentWritePage++, newRecords);
+                        newMainDataPagedFile.writePage(newPage);
+                        newRecords = new ArrayList<>();
+                    }
                 }
             }
             page = mainDataPagedFile.readPage(++currentReadPage);
