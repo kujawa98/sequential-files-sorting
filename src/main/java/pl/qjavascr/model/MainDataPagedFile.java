@@ -6,9 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static pl.qjavascr.util.ConstantsUtils.PAGE_SIZE;
-import static pl.qjavascr.util.ConstantsUtils.RECORDS_PER_PAGE;
-import static pl.qjavascr.util.ConstantsUtils.RECORD_LEN;
+import static pl.qjavascr.util.ConstantsUtils.*;
 
 public class MainDataPagedFile extends PagedFile<Record> {
 
@@ -38,6 +36,7 @@ public class MainDataPagedFile extends PagedFile<Record> {
         }
 
         //czytaj stronę do bufora
+        writeBuffer();
         long requestedPageNumberFilePointer = (long) (pageNumber - 1) * PAGE_SIZE;
         if (requestedPageNumberFilePointer > fileHandle.length() - PAGE_SIZE) {
             return new Page<>();
@@ -88,6 +87,7 @@ public class MainDataPagedFile extends PagedFile<Record> {
         }
 
         //strony nie ma w buforze
+        writeBuffer();
         long requestedPageNumberFilePointer = (long) (page.getPageNumber() - 1) * PAGE_SIZE;
         fileHandle.seek(requestedPageNumberFilePointer);
         var records = page.getData();
@@ -118,9 +118,10 @@ public class MainDataPagedFile extends PagedFile<Record> {
 
     public void writeBuffer() throws IOException {
         long requestedPageNumberFilePointer = (long) (buffer[0] - 1) * PAGE_SIZE;
-        if (requestedPageNumberFilePointer > 0) {
+        if (requestedPageNumberFilePointer >= 0) {
             fileHandle.seek(requestedPageNumberFilePointer);
             fileHandle.write(buffer);
+            buffer = new byte[BUFFER_SIZE];
         }
     }
 
