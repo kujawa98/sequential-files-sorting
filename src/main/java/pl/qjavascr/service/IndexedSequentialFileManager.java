@@ -146,7 +146,6 @@ public class IndexedSequentialFileManager {
                 record.setOverflowRecordPosition(pair.getRight().byteValue());
                 mainDataPagedFile.writePage(page);
             }
-            //todo a jakby po posortowaniu obszaru nadmiarowego "prześledzać" drogę kazdego rekordu i odpowiednio ustawiać wskaźniki?
         }
     }
 
@@ -167,6 +166,7 @@ public class IndexedSequentialFileManager {
         for (var record : page.getData()) {
             if (record.getKey() == key) {
                 System.out.println(record.getKey());
+                System.out.println(record.getData());
                 return;
             }
         }
@@ -183,19 +183,24 @@ public class IndexedSequentialFileManager {
             }
         }
         var record = page.getData().get(recordNumber);
-        do {
-            if (record.getKey() == key) {
-                System.out.println(record.getKey());
+        if (record.getKey() == key) {
+            System.out.println(record.getKey());
+            System.out.println(record.getData());
+            return;
+        }
+        while (true) {
+            if (record.getOverflowRecordPosition() != -1 && record.getOverflowRecordPage() != -1) {
+                record = overfloDataPagedFile.readPage(record.getOverflowRecordPage()).getData().get(record.getOverflowRecordPosition());
+            } else {
+                System.out.println("Nie ma rekordu z kluczem " + key);
                 return;
             }
-            record = overfloDataPagedFile.readPage(record.getOverflowRecordPage()).getData().get(record.getOverflowRecordPosition());
             if (record.getKey() == key) {
                 System.out.println(record.getKey());
+                System.out.println(record.getData());
                 return;
             }
-        } while (record.getOverflowRecordPosition() != -1 && record.getOverflowRecordPage() != -1);
-
-        System.out.println("Nie ma rekordu z kluczem " + key);
+        }
     }
 
     public void readIndexFile() throws IOException {
@@ -242,21 +247,26 @@ public class IndexedSequentialFileManager {
             }
         }
         var record = page.getData().get(recordNumber);
-        do {
-            if (record.getKey() == key) {
-                record.setData(data);
-                mainDataPagedFile.writePage(page);
+        if (record.getKey() == key) {
+            record.setData(data);
+            mainDataPagedFile.writePage(page);
+            return;
+        }
+        Page<Record> overflowPage = new Page<>();
+        while (true) {
+            if (record.getOverflowRecordPosition() != -1 && record.getOverflowRecordPage() != -1) {
+                overflowPage = overfloDataPagedFile.readPage(record.getOverflowRecordPage());
+                record = overflowPage.getData().get(record.getOverflowRecordPosition());
+            } else {
+                System.out.println("Nie ma rekordu z kluczem " + key);
                 return;
             }
-            record = overfloDataPagedFile.readPage(record.getOverflowRecordPage()).getData().get(record.getOverflowRecordPosition());
             if (record.getKey() == key) {
                 record.setData(data);
-                mainDataPagedFile.writePage(page);
+                overfloDataPagedFile.writePage(overflowPage);
                 return;
             }
-        } while (record.getOverflowRecordPosition() != -1 && record.getOverflowRecordPage() != -1);
-
-        System.out.println("Nie ma rekordu z kluczem " + key);
+        }
     }
 
     public void deleteRecord(int key) throws IOException {
@@ -293,21 +303,25 @@ public class IndexedSequentialFileManager {
             }
         }
         var record = page.getData().get(recordNumber);
-        do {
+        if (record.getKey() == key) {
+            record.setWasDeleted(true);
+            mainDataPagedFile.writePage(page);
+            return;
+        }
+        Page<Record> overflowPage = new Page<>();
+        while (true) {
+            if (record.getOverflowRecordPosition() != -1 && record.getOverflowRecordPage() != -1) {
+                overflowPage = overfloDataPagedFile.readPage(record.getOverflowRecordPage());
+                record = overflowPage.getData().get(record.getOverflowRecordPosition());
+            } else {
+                System.out.println("Nie ma rekordu z kluczem " + key);
+            }
             if (record.getKey() == key) {
                 record.setWasDeleted(true);
-                mainDataPagedFile.writePage(page);
+                overfloDataPagedFile.writePage(overflowPage);
                 return;
             }
-            record = overfloDataPagedFile.readPage(record.getOverflowRecordPage()).getData().get(record.getOverflowRecordPosition());
-            if (record.getKey() == key) {
-                record.setWasDeleted(true);
-                mainDataPagedFile.writePage(page);
-                return;
-            }
-        } while (record.getOverflowRecordPosition() != -1 && record.getOverflowRecordPage() != -1);
-
-        System.out.println("Nie ma rekordu z kluczem " + key);
+        }
     }
 
     public void reorganize() throws IOException {
@@ -321,7 +335,7 @@ public class IndexedSequentialFileManager {
         List<Record> records = page.getData();
         int currentWritePage = 1;
         int currentReadPage = 1;
-        double alpha = ALPHA * RECORDS_PER_PAGE;
+        int alpha = (int) (ALPHA * RECORDS_PER_PAGE);
         int recordsWritten = 0;
         List<Record> newRecords = new ArrayList<>(); //to wypełniamymy
 
@@ -362,11 +376,21 @@ public class IndexedSequentialFileManager {
             page = mainDataPagedFile.readPage(++currentReadPage);
             records = page.getData();
         }
-
-
         overflowRecords = 0;
         mainAreaRecords = this.records;
+        if (!newRecords.isEmpty()) {
+            newMainDataPagedFile.writePage(new Page<>(currentWritePage++, newRecords));
+            newMainDataPagedFile.writeBuffer();
+        } else {
+            newMainDataPagedFile.writeBuffer();
+        }
+        mainDataPagedFile.copy("src/test/resources/newMain.dat");
     }
 
+    public void close() throws IOException {
+        mainDataPagedFile.close();
+        overfloDataPagedFile.close();
+        indexPagedFile.close();
+    }
 
 }

@@ -43,6 +43,7 @@ public class MainDataPagedFile extends PagedFile<Record> {
         }
         fileHandle.seek(requestedPageNumberFilePointer);
         fileHandle.read(buffer);
+        reads++;
         List<Record> records = new ArrayList<>();
         int position = 1;
         for (int i = 0; i < RECORDS_PER_PAGE; i++) {
@@ -78,14 +79,7 @@ public class MainDataPagedFile extends PagedFile<Record> {
                 buffer[position++] = (byte) (i == records.size() - 1 ? 1 : 0);
             }
             return;
-        } else {
-            long requestedPageNumberFilePointer = (long) (buffer[0] - 1) * PAGE_SIZE;
-            if (requestedPageNumberFilePointer > 0) {
-                fileHandle.seek(requestedPageNumberFilePointer);
-                fileHandle.write(buffer);
-            }
         }
-
         //strony nie ma w buforze
         writeBuffer();
         long requestedPageNumberFilePointer = (long) (page.getPageNumber() - 1) * PAGE_SIZE;
@@ -122,6 +116,7 @@ public class MainDataPagedFile extends PagedFile<Record> {
             fileHandle.seek(requestedPageNumberFilePointer);
             fileHandle.write(buffer);
             buffer = new byte[BUFFER_SIZE];
+            writes++;
         }
     }
 

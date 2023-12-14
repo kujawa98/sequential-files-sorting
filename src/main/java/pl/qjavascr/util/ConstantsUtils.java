@@ -10,6 +10,8 @@ public class ConstantsUtils {
     public static final double BETA = 0.2d;
     public static final int RECORDS_PER_PAGE = (PAGE_SIZE - 1) / RECORD_LEN;
     public static final int INDEXES_PER_PAGE = (PAGE_SIZE - 1) / INDEX_LEN;
+    public static int writes = 0;
+    public static int reads = 0;
 
 
     private ConstantsUtils() {
