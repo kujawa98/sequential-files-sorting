@@ -5,9 +5,11 @@ import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 public class Page<T> {
 
     private int pageNumber;
@@ -22,5 +24,7 @@ public class Page<T> {
         this.pageNumber = -1;
         this.data = new ArrayList<>();
     }
+
+
 
 }

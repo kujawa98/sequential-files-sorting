@@ -5,14 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import static pl.qjavascr.util.ConstantsUtils.*;
 import static pl.qjavascr.util.ConstantsUtils.RECORD_LEN;
 
 @Getter
+@Setter
 public class IndexPagedFile extends PagedFile<Index> {
 
-    private final List<Integer> keys = new ArrayList<>();
+    private List<Integer> keys = new ArrayList<>();
 
     public IndexPagedFile(String fileName) throws IOException {
         super(fileName);
@@ -78,16 +80,21 @@ public class IndexPagedFile extends PagedFile<Index> {
         buffer = new byte[BUFFER_SIZE];
         fileHandle.seek(0L);
         buffer[bufferIndex++] = (byte) pageNumber;
+        boolean reachedPage = false;
         for (Integer key : keys) {
             buffer[bufferIndex++] = (byte) ((key & 0xFF000000) >> 24);
             buffer[bufferIndex++] = (byte) ((key & 0xFF0000) >> 16);
             buffer[bufferIndex++] = (byte) ((key & 0xFF00) >> 8);
             buffer[bufferIndex++] = (byte) ((key & 0xFF));
             if (bufferIndex == PAGE_SIZE) {
+                reachedPage = true;
                 writeBuffer();
                 bufferIndex = 0;
                 buffer[bufferIndex++] = (byte) ++pageNumber;
             }
+        }
+        if (!reachedPage) {
+            writeBuffer();
         }
     }
 
@@ -127,5 +134,13 @@ public class IndexPagedFile extends PagedFile<Index> {
     public void close() throws IOException {
         writeKeysToFile();
         fileHandle.close();
+    }
+
+    public void readKeys() {
+        System.out.println("Keys");
+        int pageNumber = 1;
+        for (var key : keys) {
+            System.out.println("Key " + key + " : Page number " + pageNumber++);
+        }
     }
 }

@@ -44,6 +44,7 @@ public class MainDataPagedFile extends PagedFile<Record> {
         }
         fileHandle.seek(requestedPageNumberFilePointer);
         fileHandle.read(buffer);
+        reads++;
         List<Record> records = new ArrayList<>();
         int position = 1;
         for (int i = 0; i < RECORDS_PER_PAGE; i++) {

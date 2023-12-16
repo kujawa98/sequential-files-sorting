@@ -8,6 +8,9 @@ import pl.qjavascr.service.IndexedSequentialFileManager;
 import java.io.IOException;
 import java.util.Scanner;
 
+import static pl.qjavascr.util.ConstantsUtils.reads;
+import static pl.qjavascr.util.ConstantsUtils.writes;
+
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -31,10 +34,10 @@ public class Main {
 
             switch (choice) {
                 case 1 -> {
-                    System.out.print("Key: ");
+                    System.out.println("Key: ");
                     int key = input.nextInt();
-                    System.out.println();
-                    System.out.print("Value: ");
+                    System.out.println("Value: ");
+                    input.nextLine();
                     String value = input.nextLine();
                     manager.addRecord(key, value);
                 }
@@ -69,9 +72,11 @@ public class Main {
                 }
                 default -> System.out.println("Uknown value");
             }
+            System.out.println("Reads: " + reads);
+            System.out.println("Writes: " + writes);
         }
         input.close();
-
+        indexPagedFile.close();
     }
 }
 

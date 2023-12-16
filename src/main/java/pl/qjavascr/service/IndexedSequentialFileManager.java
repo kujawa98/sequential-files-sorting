@@ -201,9 +201,8 @@ public class IndexedSequentialFileManager {
         }
     }
 
-    public void readIndexFile() throws IOException {
-        var i = indexPagedFile.readWholeFile();
-        System.out.println(i);
+    public void readIndexFile() {
+        indexPagedFile.readKeys();
     }
 
     public void readDataFile(boolean mainOnly) throws IOException {
@@ -343,8 +342,8 @@ public class IndexedSequentialFileManager {
         //todo algorytm reorganizacji pliku indeksowo-sekwencyjnego
         //todo wiadomo ile będzie rekordów a co za tym idzie wiadomo ile będzie stron
         //todo wypełniam stronę i zapisuję - przez sekwencje mam gwarancje ze bedzie git
-        MainDataPagedFile newMainDataPagedFile = new MainDataPagedFile("src/test/resources/newMain.dat");
-        IndexPagedFile newIndexPagedFile = new IndexPagedFile("src/test/resources/newIndex.idx");
+        MainDataPagedFile newMainDataPagedFile = new MainDataPagedFile("src/main/resources/newMain.dat");
+        IndexPagedFile newIndexPagedFile = new IndexPagedFile("src/main/resources/newIndex.idx");
 
         Page<Record> page = mainDataPagedFile.readPage(1);
         List<Record> records = page.getData();
@@ -398,12 +397,14 @@ public class IndexedSequentialFileManager {
         if (!newRecords.isEmpty()) {
             newMainDataPagedFile.writePage(new Page<>(currentWritePage++, newRecords));
             newMainDataPagedFile.writeBuffer();
+            newIndexPagedFile.insertData(new Index(newRecords.getFirst().getKey()));
         } else {
             newMainDataPagedFile.writeBuffer();
         }
         newIndexPagedFile.writeKeysToFile();
-        mainDataPagedFile.copy("src/test/resources/newMain.dat");
-        indexPagedFile.copy("src/test/resources/newIndex.idx");
+        mainDataPagedFile.copy("src/main/resources/newMain.dat");
+        indexPagedFile.copy("src/main/resources/newIndex.idx");
+        indexPagedFile.setKeys(new ArrayList<>(newIndexPagedFile.getKeys()));
     }
 
     public void close() throws IOException {

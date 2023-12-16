@@ -3,10 +3,12 @@ package pl.qjavascr.model;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Builder
 @Getter
 @Setter
+@ToString
 public class Record implements Comparable<Record> {
 
     //całkowity rozmiar rekordu to 4+30+1+1+1+1=38 bajtów
