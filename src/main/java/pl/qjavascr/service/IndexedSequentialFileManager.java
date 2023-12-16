@@ -214,6 +214,10 @@ public class IndexedSequentialFileManager {
         //wyszukaj stronę gdzie powinien być rekord, jeśli nie to idziesz za wskaźnikiem
         var keys = indexPagedFile.getKeys();
         int pageNumber = keys.size();
+        if (pageNumber == 0) {
+            System.out.println("No record with key " + key);
+            return;
+        }
         for (int i = 0; i < keys.size() - 1; i++) {
             if ((keys.get(i) < key && keys.get(i + 1) > key)) {
                 pageNumber = i;
@@ -270,6 +274,10 @@ public class IndexedSequentialFileManager {
         //wyszukaj stronę gdzie powinien być rekord, jeśli nie to idziesz za wskaźnikiem
         var keys = indexPagedFile.getKeys();
         int pageNumber = keys.size();
+        if (pageNumber == 0) {
+            System.out.println("No record with key " + key);
+            return;
+        }
         for (int i = 0; i < keys.size() - 1; i++) {
             if ((keys.get(i) < key && keys.get(i + 1) > key)) {
                 pageNumber = i;

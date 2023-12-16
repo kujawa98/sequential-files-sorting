@@ -4,8 +4,13 @@ package pl.qjavascr;
 import pl.qjavascr.model.IndexPagedFile;
 import pl.qjavascr.model.MainDataPagedFile;
 import pl.qjavascr.service.IndexedSequentialFileManager;
+import pl.qjavascr.service.TestFileReader;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 import static pl.qjavascr.util.ConstantsUtils.reads;
@@ -28,7 +33,8 @@ public class Main {
             System.out.println("  4. Update key");
             System.out.println("  5. Print index file");
             System.out.println("  6. Print data file");
-            System.out.println("  7. Quit");
+            System.out.println("  7. Load test file");
+            System.out.println("  8. Quit");
             System.out.println("Choose one:");
             choice = input.nextInt();
 
@@ -67,6 +73,9 @@ public class Main {
                     manager.readDataFile(true);
                 }
                 case 7 -> {
+                    TestFileReader.testFile(manager);
+                }
+                case 8 -> {
                     System.out.println("Exit");
                     running = false;
                 }
