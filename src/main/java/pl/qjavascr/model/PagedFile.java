@@ -13,7 +13,7 @@ import static pl.qjavascr.util.ConstantsUtils.BUFFER_SIZE;
 public abstract class PagedFile<T> {
 
     protected final RandomAccessFile fileHandle;
-    protected final byte[] buffer;
+    protected byte[] buffer;
 
     protected PagedFile(String fileName) throws IOException {
         this.fileHandle = new RandomAccessFile(fileName, "rw");

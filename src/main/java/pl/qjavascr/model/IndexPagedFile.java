@@ -6,9 +6,8 @@ import java.util.List;
 
 import lombok.Getter;
 
-import static pl.qjavascr.util.ConstantsUtils.INDEXES_PER_PAGE;
-import static pl.qjavascr.util.ConstantsUtils.INDEX_LEN;
-import static pl.qjavascr.util.ConstantsUtils.PAGE_SIZE;
+import static pl.qjavascr.util.ConstantsUtils.*;
+import static pl.qjavascr.util.ConstantsUtils.RECORD_LEN;
 
 @Getter
 public class IndexPagedFile extends PagedFile<Index> {
@@ -21,28 +20,37 @@ public class IndexPagedFile extends PagedFile<Index> {
 
     @Override
     public Page<Index> readPage(int pageNumber) throws IOException {
-        for (int i = 0; i < buffer.length; i += PAGE_SIZE) {
-            int currentPageNumber = buffer[i];
-            if (currentPageNumber == pageNumber) {
-                return trasnformBytesToPage(i);
+        if (buffer[0] == pageNumber) { //strona jest w buforze
+            List<Index> indexes = new ArrayList<>();
+            int position = 1;
+            for (int i = 0; i < INDEXES_PER_PAGE; i++) {
+                var index = transformBytesToIndex(position);
+                indexes.add(index);
+                position += INDEX_LEN;
+                if (index.isLastOnPage()) {
+                    break;
+                }
             }
+            return new Page<>(pageNumber, indexes);
         }
+
+        writeBuffer();
+        //czytaj stronę do bufora
         long requestedPageNumberFilePointer = (long) (pageNumber - 1) * PAGE_SIZE;
         if (requestedPageNumberFilePointer > fileHandle.length() - PAGE_SIZE) {
             return new Page<>();
         }
         fileHandle.seek(requestedPageNumberFilePointer);
         fileHandle.read(buffer);
-        return trasnformBytesToPage(0);
-    }
-
-    private Page<Index> trasnformBytesToPage(int position) {
-        int pageNumber = buffer[position];
         List<Index> indexes = new ArrayList<>();
+        int position = 1;
         for (int i = 0; i < INDEXES_PER_PAGE; i++) {
-            Index index = transformBytesToIndex(position + 1);
+            var index = transformBytesToIndex(position);
             indexes.add(index);
             position += INDEX_LEN;
+            if (index.isLastOnPage()) {
+                break;
+            }
         }
         return new Page<>(pageNumber, indexes);
     }
@@ -67,7 +75,6 @@ public class IndexPagedFile extends PagedFile<Index> {
         }
         return bytes;
     }
-
 
 
     public void insertData(Index data) throws IOException {
@@ -102,10 +109,15 @@ public class IndexPagedFile extends PagedFile<Index> {
 
     @Override
     public void close() throws IOException {
-
+        fileHandle.close();
     }
 
-    public boolean containsKey(int key){
-        return keys.contains(key);
+    public void writeBuffer() throws IOException {
+        long requestedPageNumberFilePointer = (long) (buffer[0] - 1) * PAGE_SIZE;
+        if (requestedPageNumberFilePointer >= 0) {
+            fileHandle.seek(requestedPageNumberFilePointer);
+            fileHandle.write(buffer);
+            buffer = new byte[BUFFER_SIZE];
+        }
     }
 }
