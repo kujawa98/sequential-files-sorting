@@ -91,14 +91,17 @@ public class IndexedSequentialFileManagerTest {
         indexedSequentialFileManager.addRecord(4, "qwertyuiopqwertyuiopqwertyuiop");
         indexedSequentialFileManager.addRecord(5, "qwertyuiopqwertyuiopqwertyuiop");
         indexedSequentialFileManager.addRecord(8, "qwertyuiopqwertyuiopqwertyuiop");
-
         indexedSequentialFileManager.addRecord(3, "qwertyuiopqwertyuiopqwertyuiop");
-        indexedSequentialFileManager.addRecord(9, "qwertyuiopqwertyuiopqwertyuiop");
-        indexedSequentialFileManager.addRecord(2, "qwertyuiopqwertyuiopqwertyuiop");
-        indexedSequentialFileManager.addRecord(7, "abcdefghijklmnoprstuwyqvxzabcd");
 
-        indexedSequentialFileManager.deleteRecord(0);
-        indexedSequentialFileManager.reorganize();
+        indexedSequentialFileManager.addRecord(9, "qwertyuiopqwertyuiopqwertyuiop");
+        indexedSequentialFileManager.addRecord(19, "qwertyuiopqwertyuiopqwertyuiop");
+        indexedSequentialFileManager.addRecord(12, "qwertyuiopqwertyuiopqwertyuiop");
+        indexedSequentialFileManager.addRecord(17, "abcdefghijklmnoprstuwyqvxzabcd");
+//
+//
+//        indexedSequentialFileManager.deleteRecord(0);
+//        indexedSequentialFileManager.reorganize();
+        indexedSequentialFileManager.close();
     }
 
     @Test

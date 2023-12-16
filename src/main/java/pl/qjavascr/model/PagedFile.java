@@ -8,7 +8,7 @@ import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
-import static pl.qjavascr.util.ConstantsUtils.BUFFER_SIZE;
+import static pl.qjavascr.util.ConstantsUtils.*;
 
 public abstract class PagedFile<T> {
 
@@ -40,6 +40,16 @@ public abstract class PagedFile<T> {
         try (FileChannel src = new FileInputStream(source).getChannel()) {
             FileChannel thisChannel = fileHandle.getChannel();
             thisChannel.transferFrom(src, 0, src.size());
+        }
+    }
+
+    public void writeBuffer() throws IOException {
+        long requestedPageNumberFilePointer = (long) (buffer[0] - 1) * PAGE_SIZE;
+        if (requestedPageNumberFilePointer >= 0) {
+            fileHandle.seek(requestedPageNumberFilePointer);
+            fileHandle.write(buffer);
+            buffer = new byte[BUFFER_SIZE];
+            writes++;
         }
     }
 

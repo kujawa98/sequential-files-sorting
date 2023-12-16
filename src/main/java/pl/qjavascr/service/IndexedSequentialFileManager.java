@@ -401,7 +401,9 @@ public class IndexedSequentialFileManager {
         } else {
             newMainDataPagedFile.writeBuffer();
         }
+        newIndexPagedFile.writeKeysToFile();
         mainDataPagedFile.copy("src/test/resources/newMain.dat");
+        indexPagedFile.copy("src/test/resources/newIndex.idx");
     }
 
     public void close() throws IOException {
