@@ -118,4 +118,16 @@ public class IndexedSequentialFileManagerTest {
 
 
     }
+
+    @Test
+    void testHighNumbers() throws IOException {
+        indexedSequentialFileManager.addRecord(100, "qwertyuiopqwertyuiopqwertyuiop");
+        indexedSequentialFileManager.addRecord(101, "qwertyuiopqwertyuiopqwertyuiop");
+        indexedSequentialFileManager.addRecord(102, "qwertyuiopqwertyuiopqwertyuiop");
+        indexedSequentialFileManager.addRecord(103, "abcdefghijklmnoprstuwyqvxzabcd");
+
+        indexedSequentialFileManager.addRecord(1, "abcdefghijklmnoprstuwyqvxzabcd");
+
+
+    }
 }

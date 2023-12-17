@@ -1,6 +1,7 @@
 package pl.qjavascr.service;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,12 +57,25 @@ public class IndexedSequentialFileManager {
         }
         //do której strony powinienem zapisać
         int pageNumber = keys.size();
+        if (key < keys.get(0)) {
+            var page = mainDataPagedFile.readPage(1);
+            Record record = page.getData().getFirst();
+            String temp = data;
+            data = record.getData();
+            record.setData(temp);
+
+            int tempK = key;
+            key = record.getKey();
+            record.setKey(tempK);
+            mainDataPagedFile.writePage(page);
+            indexPagedFile.getKeys().set(0, tempK);
+        }
         for (int i = 0; i < keys.size() - 1; i++) {
             if ((keys.get(i) < key && keys.get(i + 1) > key)) {
-                pageNumber = i;
+                pageNumber = i + 1;
                 break;
             } else if (i + 1 == keys.size() - 1) {
-                pageNumber = i + 1;
+                pageNumber = i + 2;
                 break;
             }
         }
@@ -79,6 +93,7 @@ public class IndexedSequentialFileManager {
             page.getData().sort(Record::compareTo);
             page.setPageNumber(pageNumber);
             mainDataPagedFile.writePage(page);
+            indexPagedFile.getKeys().set(pageNumber - 1, page.getData().get(0).getKey());
             records++;
         } else {
             // 3. określ miejsce gdzie powinien się znaleźć nowy rekord
@@ -151,12 +166,16 @@ public class IndexedSequentialFileManager {
         //wyszukaj stronę gdzie powinien być rekord, jeśli nie to idziesz za wskaźnikiem
         var keys = indexPagedFile.getKeys();
         int pageNumber = keys.size();
+        if (pageNumber == 0 || key < keys.get(0)) {
+            System.out.println("There's no such key as " + key);
+            return;
+        }
         for (int i = 0; i < keys.size() - 1; i++) {
             if ((keys.get(i) < key && keys.get(i + 1) > key)) {
-                pageNumber = i;
+                pageNumber = i + 1;
                 break;
             } else if (i + 1 == keys.size() - 1) {
-                pageNumber = i + 1;
+                pageNumber = i + 2;
                 break;
             }
         }
@@ -214,16 +233,16 @@ public class IndexedSequentialFileManager {
         //wyszukaj stronę gdzie powinien być rekord, jeśli nie to idziesz za wskaźnikiem
         var keys = indexPagedFile.getKeys();
         int pageNumber = keys.size();
-        if (pageNumber == 0) {
+        if (pageNumber == 0 || key < keys.get(0)) {
             System.out.println("No record with key " + key);
             return;
         }
         for (int i = 0; i < keys.size() - 1; i++) {
             if ((keys.get(i) < key && keys.get(i + 1) > key)) {
-                pageNumber = i;
+                pageNumber = i + 1;
                 break;
             } else if (i + 1 == keys.size() - 1) {
-                pageNumber = i + 1;
+                pageNumber = i + 2;
                 break;
             }
         }
@@ -274,16 +293,16 @@ public class IndexedSequentialFileManager {
         //wyszukaj stronę gdzie powinien być rekord, jeśli nie to idziesz za wskaźnikiem
         var keys = indexPagedFile.getKeys();
         int pageNumber = keys.size();
-        if (pageNumber == 0) {
+        if (pageNumber == 0 || key < keys.get(0)) {
             System.out.println("No record with key " + key);
             return;
         }
         for (int i = 0; i < keys.size() - 1; i++) {
             if ((keys.get(i) < key && keys.get(i + 1) > key)) {
-                pageNumber = i;
+                pageNumber = i + 1;
                 break;
             } else if (i + 1 == keys.size() - 1) {
-                pageNumber = i + 1;
+                pageNumber = i + 2;
                 break;
             }
         }
@@ -332,6 +351,7 @@ public class IndexedSequentialFileManager {
                 record = overflowPage.getData().get(record.getOverflowRecordPosition());
             } else {
                 System.out.println("Nie ma rekordu z kluczem " + key);
+                return;
             }
             if (record.getKey() == key) {
                 if (!record.isWasDeleted()) {
@@ -350,6 +370,8 @@ public class IndexedSequentialFileManager {
         //todo algorytm reorganizacji pliku indeksowo-sekwencyjnego
         //todo wiadomo ile będzie rekordów a co za tym idzie wiadomo ile będzie stron
         //todo wypełniam stronę i zapisuję - przez sekwencje mam gwarancje ze bedzie git
+        new PrintWriter("src/main/resources/newMain.dat").close();
+        new PrintWriter("src/main/resources/newIndex.idx").close();
         MainDataPagedFile newMainDataPagedFile = new MainDataPagedFile("src/main/resources/newMain.dat");
         IndexPagedFile newIndexPagedFile = new IndexPagedFile("src/main/resources/newIndex.idx");
 
@@ -413,6 +435,8 @@ public class IndexedSequentialFileManager {
         mainDataPagedFile.copy("src/main/resources/newMain.dat");
         indexPagedFile.copy("src/main/resources/newIndex.idx");
         indexPagedFile.setKeys(new ArrayList<>(newIndexPagedFile.getKeys()));
+        newIndexPagedFile.close();
+        newMainDataPagedFile.close();
     }
 
     public void close() throws IOException {
