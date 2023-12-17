@@ -26,6 +26,12 @@ public class TestFileReader {
                 case "R" -> {
                     fileManager.reorganize();
                 }
+                case "P" -> {
+                    fileManager.readDataFile();
+                }
+                case "Pi" -> {
+                    fileManager.readIndexFile();
+                }
                 case "U" -> {
                     int key = Integer.parseInt(tokens[1]);
                     String value = tokens[2];

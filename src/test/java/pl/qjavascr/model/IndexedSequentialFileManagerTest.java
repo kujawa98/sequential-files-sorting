@@ -43,7 +43,7 @@ public class IndexedSequentialFileManagerTest {
 
     @Test
     void testReadWholeFile() throws IOException {
-        indexedSequentialFileManager.readDataFile(true);
+        indexedSequentialFileManager.readDataFile();
         indexedSequentialFileManager.readIndexFile();
     }
 

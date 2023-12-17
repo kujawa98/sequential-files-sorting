@@ -127,7 +127,9 @@ public class MainDataPagedFile extends PagedFile<Record> {
             writePage(page);
             return Pair.of(pageNumber, page.getData().indexOf(record));
         } else {
+
             writeBuffer();
+
             long fileLenght = fileHandle.length();
             pageNumber = Math.toIntExact(fileLenght / PAGE_SIZE);
             pageNumber = pageNumber == 0 ? 1 : pageNumber;
@@ -171,4 +173,8 @@ public class MainDataPagedFile extends PagedFile<Record> {
                 .build();
     }
 
+    public void resetBuffer() throws IOException {
+        this.buffer = new byte[BUFFER_SIZE];
+        fileHandle.seek(0L);
+    }
 }

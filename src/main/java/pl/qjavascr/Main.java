@@ -57,10 +57,10 @@ public class Main {
                     manager.reorganize();
                 }
                 case 4 -> {
-                    System.out.print("Key: ");
+                    System.out.println("Key: ");
                     int key = input.nextInt();
-                    System.out.println();
-                    System.out.print("Value: ");
+                    System.out.println("Value: ");
+                    input.nextLine();
                     String value = input.nextLine();
                     manager.updateRecord(key, value);
                 }
@@ -70,7 +70,7 @@ public class Main {
                 }
                 case 6 -> {
                     System.out.println("Main file");
-                    manager.readDataFile(true);
+                    manager.readDataFile();
                 }
                 case 7 -> {
                     TestFileReader.testFile(manager);

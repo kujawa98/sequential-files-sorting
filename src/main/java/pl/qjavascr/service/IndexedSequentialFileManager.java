@@ -32,6 +32,9 @@ public class IndexedSequentialFileManager {
 
 
     public void addRecord(int key, String data) throws IOException {
+        if (key == 39){
+            System.out.println();
+        }
         // 1. znajdź stronę z indeksu na której powinieneś zapisać
         var keys = indexPagedFile.getKeys();
         if (keys.contains(key)) {
@@ -82,6 +85,12 @@ public class IndexedSequentialFileManager {
         // 2. jeżeli strona w głównym obszarze danych jest wolna to zapisz, jeżeli nie to zapisz do obszaru nadmiarowego
         if (mainDataPagedFile.isPageFree(pageNumber)) {
             Page<Record> page = mainDataPagedFile.readPage(pageNumber);
+            int finalKey = key;
+            boolean isKey = page.getData().stream().anyMatch(record -> record.getKey() == finalKey);
+            if (isKey) {
+                System.out.println("Rekordy nie mogą się powtarzać");
+                return;
+            }
             page.getData()
                     .add(Record.builder()
                             .data(data)
@@ -98,6 +107,12 @@ public class IndexedSequentialFileManager {
         } else {
             // 3. określ miejsce gdzie powinien się znaleźć nowy rekord
             Page<Record> page = mainDataPagedFile.readPage(pageNumber);
+            int finalKey = key;
+            boolean isKey = page.getData().stream().anyMatch(record -> record.getKey() == finalKey);
+            if (isKey) {
+                System.out.println("Rekordy nie mogą się powtarzać");
+                return;
+            }
             var recordsList = page.getData();
             int recordNumber = 0;
             for (int i = 0; i < recordsList.size() - 1; i++) {
@@ -127,6 +142,9 @@ public class IndexedSequentialFileManager {
                     record.setKey(tempK);
 
                     overfloDataPagedFile.writePage(pg);
+                } else if (record.getKey() == key) {
+                    System.out.println("Rekordy nie mogą się powtarzać");
+                    return;
                 }
             }
             //todo tutaj wpisac nowy rekord na koniec overflowa i przestawić wskaźniki
@@ -160,6 +178,7 @@ public class IndexedSequentialFileManager {
                 reorganize();
             }
         }
+
     }
 
     public void readRecord(int key) throws IOException {
@@ -224,12 +243,33 @@ public class IndexedSequentialFileManager {
         indexPagedFile.readKeys();
     }
 
-    public void readDataFile(boolean mainOnly) throws IOException {
-        var s = mainDataPagedFile.readWholeFile();
-        System.out.println(s);
+    public void readDataFile() throws IOException {
+        Page<Record> page = mainDataPagedFile.readPage(1);
+        List<Record> records = page.getData();
+        int currentReadPage = 1;
+        while (page.getPageNumber() != -1) {
+            System.out.println("Page number " + currentReadPage);
+            System.out.println("------------------------------------------------");
+            for (Record rec : records) { //dla każdego rekordu ze strony w obszarze głównym
+                System.out.println(rec);
+                //podążamy za wskaźnikami
+                Record temp = rec;
+                int tabs = 1;
+                while (temp.getOverflowRecordPosition() != -1 && temp.getOverflowRecordPage() != -1) {
+                    temp = overfloDataPagedFile.readPage(temp.getOverflowRecordPage()).getData().get(temp.getOverflowRecordPosition());
+                    System.out.println("    ".repeat(tabs++) + "-->" + temp);
+                }
+            }
+            page = mainDataPagedFile.readPage(++currentReadPage);
+            records = page.getData();
+        }
+
     }
 
     public void updateRecord(int key, String data) throws IOException {
+        if (key == 39){
+            System.out.println();
+        }
         //wyszukaj stronę gdzie powinien być rekord, jeśli nie to idziesz za wskaźnikiem
         var keys = indexPagedFile.getKeys();
         int pageNumber = keys.size();
@@ -437,6 +477,7 @@ public class IndexedSequentialFileManager {
         indexPagedFile.setKeys(new ArrayList<>(newIndexPagedFile.getKeys()));
         newIndexPagedFile.close();
         newMainDataPagedFile.close();
+        overfloDataPagedFile.resetBuffer();
     }
 
     public void close() throws IOException {
